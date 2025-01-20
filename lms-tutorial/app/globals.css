@@ -4,7 +4,7 @@
 
 html,
 body,
-:root{
+:root {
   height: 100%;
 }
 
@@ -51,6 +51,7 @@ body,
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -83,7 +84,10 @@ body,
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
+
+@import "~@uploadthing/react/styles.css"
