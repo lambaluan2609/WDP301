@@ -27,7 +27,6 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   const [imageUrl, setImageUrl] = useState(initialData.imageUrl);
 
   const toggleEdit = () => setEditing((current) => !current);
-
   const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -61,24 +60,29 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
           )}
         </Button>
       </div>
-      {!isEditing &&
-        (!imageUrl ? (
-          <div className="flex items-center justify-center h-60 bg-slate-200">
-            <ImageIcon className="h-10 w-10 text-slate-500" />
-          </div>
-        ) : (
-          <div className="relative w-full h-60 mt-2">
-      <Image
-        alt="Uploaded Image"
-        src={imageUrl.startsWith("http") ? imageUrl : `/fallback.jpg`} // Kiểm tra URL hợp lệ
-        width={800} 
-        height={450}
-        className="object-cover rounded-md"
-      />
-    </div>
-        ))}
+
+      {!isEditing && (
+        <div className="flex justify-center items-center w-full">
+          {!imageUrl ? (
+            <div className="flex items-center justify-center h-40 bg-slate-200 rounded-md w-full max-w-md">
+              <ImageIcon className="h-10 w-10 text-slate-500" />
+            </div>
+          ) : (
+            <div className="relative w-full max-w-md h-40 mt-2">
+              <Image
+                alt="Uploaded Image"
+                src={imageUrl.startsWith("http") ? imageUrl : `/fallback.jpg`}
+                width={320}
+                height={180}
+                className="object-contain rounded-md w-full h-full"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
       {isEditing && (
-        <div>
+        <div className="mt-4">
           <FileUpload
             onChange={(url) => {
               if (url) {
