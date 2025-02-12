@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormMessage,
@@ -29,7 +28,7 @@ interface PriceFormProps {
 }
 
 const formSchema = z.object({
-  price: z.coerce.number(),
+  price: z.coerce.number().min(0, { message: "Price must be a non-negative number" }),
 });
 
 export const PriceForm = ({
