@@ -1,7 +1,12 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { LayoutDashboard, File, ListChecks, CircleDollarSign } from "lucide-react";
+import {
+  LayoutDashboard,
+  File,
+  ListChecks,
+  CircleDollarSign,
+} from "lucide-react";
 import { IconBadge } from "@/components/icon-badge";
 import { TitleForm } from "./_components/title-form";
 import { PriceForm } from ".//_components/price-form";
@@ -9,6 +14,7 @@ import { CategoryForm } from ".//_components/category-form";
 import { DescriptionForm } from ".//_components/description-form";
 import { ImageForm } from ".//_components/image-form";
 import { AttachmentForm } from "./_components/attachment-form";
+import { ChaptersForm } from "./_components/chapters-form";
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const authData = await auth();
@@ -21,14 +27,20 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const course = await db.course.findUnique({
     where: {
       id: params.courseId,
+      userId,
     },
-    include:{
+    include: {
+      chapters: {
+        orderBy: {
+          position: "asc",
+        },
+      },
       attachments: {
         orderBy: {
           createdAt: "desc",
-        }
-      }
-    }
+        },
+      },
+    },
   });
   const categories = await db.category.findMany({
     orderBy: {
@@ -46,6 +58,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     course.imageUrl,
     course.price,
     course.categoryId,
+    course.chapters.some((chapter) => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;
@@ -71,13 +84,13 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
           <TitleForm initialData={course} courseId={course.id} />
           <DescriptionForm initialData={course} courseId={course.id} />
           <ImageForm initialData={course} courseId={course.id} />
-          <CategoryForm 
-            initialData={course} 
+          <CategoryForm
+            initialData={course}
             courseId={course.id}
             options={categories.map((category) => ({
               label: category.name,
               value: category.id,
-            }))} 
+            }))}
           />
         </div>
         <div>
@@ -85,9 +98,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
             <IconBadge icon={ListChecks} />
             <h2 className="text-xl">Course chapters</h2>
           </div>
-          <div>
-            ToDo: Chapters
-          </div>
+          <ChaptersForm initialData={course} courseId={course.id} />
           <div className="mt-6">
             <div className="flex items-center gap-x-2">
               <IconBadge icon={CircleDollarSign} />
