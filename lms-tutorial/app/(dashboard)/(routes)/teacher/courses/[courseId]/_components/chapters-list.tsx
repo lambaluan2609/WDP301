@@ -8,7 +8,7 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { Badge, Star, Grip, Pencil } from "lucide-react";
+import { Badge, Grip, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChapterListProps {
