@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Course, Chapter } from "@prisma/client";
 import { Input } from "@/components/ui/input";
+import { ChapterList } from "./chapters-list";
 
 interface ChaptersFormProps {
   initialData: Course & { chapters: Chapter[] };
@@ -110,7 +111,9 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
           )}
         >
           {!initialData.chapters.length && "No Chapters"}
-          {/* TODO: Add a list of chapters*/}
+          <ChapterList onEdit={() => {}} />
+          onReorder = {() => {}}
+          items = {initialData.chapters || []}
         </div>
       )}
 
