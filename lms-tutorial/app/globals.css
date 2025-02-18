@@ -8,6 +8,10 @@ body,
   height: 100%;
 }
 
+.logo {
+  width: 100px;
+  height: auto;
+}
 
 :root {
   --foreground-rgb: 0, 0, 0;
