@@ -50,85 +50,84 @@ const ChapterIdPage = async ({
   const completionText = `(${completedFields}/${totalFields})`;
   const isComplete = requiredFields.every(Boolean);
 
-
   return (
     <>
       {!chapter.isPublished && (
-        <Banner
-          variant="warning"
-          label="This chapter is unpublished. It will not be visible in the course."
-        />
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md mb-6">
+          <Banner
+            variant="warning"
+            label="This chapter is unpublished. It will not be visible in the course."
+          />
+        </div>
       )}
-    <div className="p-6">
-      <div className="flex items-center justify-between">
-        <div className="w-full">
+      <div className="p-6 bg-white shadow-md rounded-lg">
+        <div className="flex items-center justify-between border-b pb-4">
           <Link
             href={`/teacher/courses/${courseId}`}
-            className="flex items-center text-sm hover:opacity-75 transition mb-6"
+            className="flex items-center text-sm text-gray-600 hover:opacity-75 transition"
           >
-            <ArrowLeft className="h-4 w-4 m-2" />
+            <ArrowLeft className="h-4 w-4 mr-2" />
             Back to course setup
           </Link>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex flex-col gap-y-2">
-              <h1 className="text-2xl font-medium">Chapter Creation</h1>
-              <span className="text-sm text-slate-700">
-                Complete all fields {completionText}
-              </span>
+          <ChapterActions
+            disabled={!isComplete}
+            courseId={courseId}
+            chapterId={chapterId}
+            isPublished={chapter.isPublished}
+          />
+        </div>
+
+        <div className="mt-4">
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Chapter Creation
+          </h1>
+          <span className="text-sm text-gray-600">
+            Complete all fields {completionText}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+          <div className="p-4 border rounded-lg bg-gray-50 shadow-sm">
+            <div className="flex items-center gap-2 text-lg font-medium">
+              <IconBadge icon={LayoutDashboard} />
+              <h2>Customize your chapter</h2>
             </div>
-            <ChapterActions
-              disabled={!isComplete}
+            <ChapterTitleForm
+              initialData={chapter}
               courseId={courseId}
               chapterId={chapterId}
-              isPublished={chapter.isPublished}
+            />
+            <ChapterDescriptionForm
+              initialData={chapter}
+              courseId={courseId}
+              chapterId={chapterId}
+            />
+          </div>
+
+          <div className="p-4 border rounded-lg bg-gray-50 shadow-sm">
+            <div className="flex items-center gap-2 text-lg font-medium">
+              <IconBadge icon={Eye} />
+              <h2>Access Settings</h2>
+            </div>
+            <ChapterAccessForm
+              initialData={chapter}
+              courseId={courseId}
+              chapterId={chapterId}
             />
           </div>
         </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
-        <div className="space-y-4">
-          <div className="flex items-center gap-x-2">
-            <IconBadge icon={LayoutDashboard} />
-            <h2>Customize your chapter</h2>
-          </div>
-          <ChapterTitleForm
-            initialData={chapter}
-            courseId={courseId}
-            chapterId={chapterId}
-          />
-          <ChapterDescriptionForm
-            initialData={chapter}
-            courseId={courseId}
-            chapterId={chapterId}
-          />
-        </div>
-        <div>
-        <div className="flex items-center gap-x-2">
-            <IconBadge icon={Eye} />
-            <h2 className="text-xl">
-              Access Settings
-              </h2>
-          </div>
-          <ChapterAccessForm
-            initialData={chapter}
-            courseId={courseId}
-            chapterId={chapterId}
-          />
-          </div>
-        </div>
-        <div>
-        <div className="flex items-center gap-x-2">
-        <IconBadge icon={Video} />
-        <h2 className="text-xl">
-          Add a video
-          </h2>
+
+        <div className="p-4 mt-6 border rounded-lg bg-gray-50 shadow-sm">
+          <div className="flex items-center gap-2 text-lg font-medium">
+            <IconBadge icon={Video} />
+            <h2>Add a video</h2>
           </div>
           <ChapterVideoForm
-        initialData={chapter} 
-        courseId={courseId}
-        chapterId={chapterId}
-      />
-      </div>
+            initialData={chapter}
+            courseId={courseId}
+            chapterId={chapterId}
+          />
+        </div>
       </div>
     </>
   );

@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import axios from "axios";
-import MuxPlayer from "@mux/mux-player-react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
 import { useState } from "react";
@@ -10,8 +10,10 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Chapter, MuxData } from "@prisma/client";
 import { FileUpload } from "@/components/file-upload";
-import Image from "next/image";
-import { init } from "next/dist/compiled/webpack/webpack";
+
+const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), {
+  ssr: false,
+});
 
 interface ChapterVideoFormProps {
   initialData: Chapter & { muxData?: MuxData | null };
@@ -20,10 +22,14 @@ interface ChapterVideoFormProps {
 }
 
 const formSchema = z.object({
-  videoUrl: z.string().min(1), 
+  videoUrl: z.string().min(1),
 });
 
-export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVideoFormProps) => {
+export const ChapterVideoForm = ({
+  initialData,
+  courseId,
+  chapterId,
+}: ChapterVideoFormProps) => {
   const [isEditing, setEditing] = useState(false);
   const [videoUrl, setVideoUrl] = useState(initialData.videoUrl);
 
@@ -32,7 +38,10 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
+      await axios.patch(
+        `/api/courses/${courseId}/chapters/${chapterId}`,
+        values
+      );
       toast.success("Chapter updated");
       toggleEdit();
       router.refresh();
@@ -50,7 +59,7 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
           {!isEditing && !videoUrl && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Add an video
+              Add a video
             </>
           )}
           {!isEditing && initialData.videoUrl && (
@@ -70,9 +79,7 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
             </div>
           ) : (
             <div className="relative aspect-video mt-2">
-              <MuxPlayer
-                playbackId={initialData.muxData?.playbackId || ""}
-                />
+              <MuxPlayer playbackId={initialData.muxData?.playbackId || ""} />
             </div>
           )}
         </div>
@@ -95,9 +102,10 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
       )}
       {initialData.videoUrl && !isEditing && (
         <div className="text-xs text-muted-foreground mt-2">
-          Videos can take a few minutes to process. Refest the page if video does not appear.
+          Videos can take a few minutes to process. Refresh the page if the
+          video does not appear.
         </div>
-          )}
+      )}
     </div>
   );
 };
