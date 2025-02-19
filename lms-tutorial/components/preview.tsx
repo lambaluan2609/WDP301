@@ -2,21 +2,23 @@
 
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
-import "react-quill/dist/quill.bubble.css";
+import "react-quill-new/dist/quill.bubble.css";
 
 interface PreviewProps {
-  value: string;
+  value: string | null;
 }
 
 export const Preview = ({ value }: PreviewProps) => {
   const ReactQuill = useMemo(
-    () => dynamic(() => import("react-quill"), { ssr: false }),
+    () => dynamic(() => import("react-quill-new"), { ssr: false }),
     []
   );
 
   return (
-    <div className="bg-white">
-      <ReactQuill theme="bubble" value={value} readOnly />
-    </div>
+    <ReactQuill
+      theme="bubble"
+      value={value ?? ""}
+      readOnly
+    />
   );
 };

@@ -24,9 +24,11 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     return redirect("/");
   }
 
+  const { courseId } = await params;
+
   const course = await db.course.findUnique({
     where: {
-      id: params.courseId,
+      id: courseId,
       userId,
     },
     include: {
