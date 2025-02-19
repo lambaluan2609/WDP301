@@ -1,3 +1,4 @@
+import { ChapterDescriptionForm } from "@/app/(dashboard)/(routes)/teacher/courses/[courseId]/chapters/[chapterId]/_components/chapter-description-form";
 import { ChapterTitleForm } from "./_components/chapter-title-form";
 import { IconBadge } from "@/components/icon-badge";
 import { db } from "@/lib/db";
@@ -17,14 +18,16 @@ const ChapterIdPage = async ({
   const authData = await auth();
   const { userId } = authData;
 
+  const { courseId, chapterId } = await params;
+
   if (!userId) {
     return redirect("/");
   }
 
   const chapter = await db.chapter.findUnique({
     where: {
-      id: params.chapterId,
-      courseId: params.courseId,
+      id: chapterId,
+      courseId: courseId,
     },
     include: {
       muxData: true,
@@ -35,14 +38,10 @@ const ChapterIdPage = async ({
     return redirect("/");
   }
 
-  const rerquiredFields = [
-    chapter.title,
-    chapter.description,
-    chapter.videoUrl,
-  ];
+  const requiredFields = [chapter.title, chapter.description, chapter.videoUrl];
 
-  const totalFields = rerquiredFields.length;
-  const completedFields = rerquiredFields.filter(Boolean).length;
+  const totalFields = requiredFields.length;
+  const completedFields = requiredFields.filter(Boolean).length;
 
   const completionText = `(${completedFields}/${totalFields})`;
 
@@ -51,7 +50,7 @@ const ChapterIdPage = async ({
       <div className="flex items-center justify-between">
         <div className="w-full">
           <Link
-            href={`/teacher/courses/${params.courseId}`}
+            href={`/teacher/courses/${courseId}`}
             className="flex items-center text-sm hover:opacity-75 transition mb-6"
           >
             <ArrowLeft className="h-4 w-4 m-2" />
@@ -75,8 +74,13 @@ const ChapterIdPage = async ({
           </div>
           <ChapterTitleForm
             initialData={chapter}
-            courseId={params.courseId}
-            chapterId={params.chapterId}
+            courseId={courseId}
+            chapterId={chapterId}
+          />
+          <ChapterDescriptionForm
+            initialData={chapter}
+            courseId={courseId}
+            chapterId={chapterId}
           />
         </div>
       </div>
