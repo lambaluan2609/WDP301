@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import {
   LayoutDashboard,
   File,
@@ -15,8 +15,12 @@ import { DescriptionForm } from ".//_components/description-form";
 import { ImageForm } from ".//_components/image-form";
 import { AttachmentForm } from "./_components/attachment-form";
 import { ChaptersForm } from "./_components/chapters-form";
+import { Banner } from "@/components/banner";
+import { Actions } from "./_components/actions";
 
-const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
+const CourseIdPage = async ({ params
+  
+ }: { params: { courseId: string } }) => {
   const authData = await auth();
   const { userId } = authData;
 
@@ -24,7 +28,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     return redirect("/");
   }
 
-  const { courseId } = await params;
+  const { courseId } =  params;
 
   const course = await db.course.findUnique({
     where: {
@@ -67,7 +71,18 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const completedFields = requiredFields.filter(Boolean).length;
 
   const completionText = `(${completedFields}/${totalFields})`;
+
+  const isComplete = requiredFields.every(Boolean);
+
+
+
   return (
+    <>
+      {!course.isPublished && (
+        <Banner
+          label="This course is unpublished. It will not be visible to the students."
+        />
+      )}
     <div className="p-6">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-y-2">
@@ -76,6 +91,11 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
             Complete all fields {completionText}
           </span>
         </div>
+        <Actions
+          disabled={!isComplete}
+          courseId={courseId}
+          isPublished={course.isPublished}
+        />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
         <div>
@@ -118,6 +138,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
         </div>
       </div>
     </div>
+  </>
   );
 };
 

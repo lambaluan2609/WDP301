@@ -12,7 +12,7 @@ async function main() {
         { name: "Photography" },
         { name: "Accounting" },
         { name: "Engineering" },
-        { name: "Film" } 
+        { name: "Filming" } 
       ],
     });
 
