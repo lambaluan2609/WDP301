@@ -3,44 +3,51 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 
-const { video: Video } = new Mux({ 
+const { video: Video } = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
 
-export async function DELETE (
+export async function DELETE(
   req: Request,
-  { params }: { params: { courseId: string } }
+  context: { params: { courseId: string } }
 ) {
   try {
+    const { params } = context;
     const { userId } = await auth();
 
-    if(!userId) {
-      return new NextResponse("Unauthorized", {status: 401});
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const course = await db.course.findUnique({
       where: {
         id: params.courseId,
-        userId: userId, 
+        userId,
       },
       include: {
         chapters: {
           include: {
             muxData: true,
-          }
-          
-        }
-      }
+          },
+        },
+      },
     });
-    
+
     if (!course) {
-      return new NextResponse("Not found", {status: 404});
+      return new NextResponse("Not found", { status: 404 });
     }
 
-    for (const chapter of course.chapters){
-      if (chapter.muxData?.assetId){
-        await Video.assets.delete(chapter.muxData.assetId);
+    for (const chapter of course.chapters) {
+      if (chapter.muxData?.assetId) {
+        try {
+          await Video.assets.delete(chapter.muxData.assetId);
+        } catch (muxError) {
+          console.warn(
+            `⚠️ Lỗi khi xóa Mux asset ${chapter.muxData.assetId}:`,
+            muxError
+          );
+        }
       }
     }
 
@@ -51,24 +58,19 @@ export async function DELETE (
     });
 
     return NextResponse.json(deletedCourse);
-  } catch (error){
-    console.log("[COURSE_ID_DELETE]", error);
-    return new NextResponse("Internal Error", {status: 500});
+  } catch (error) {
+    console.error("[COURSE_ID_DELETE]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }
 
 export async function PATCH(
   req: Request,
-  {
-    params,
-  }: {
-    params: { courseId: string };
-  }
+  context: { params: { courseId: string } }
 ) {
   try {
-    const authData = await auth();
-    const { userId } = authData;
-    const { courseId } = params;
+    const { params } = context;
+    const { userId } = await auth();
     const values = await req.json();
 
     if (!userId) {
@@ -77,20 +79,20 @@ export async function PATCH(
 
     const course = await db.course.update({
       where: {
-        id: courseId,
+        id: params.courseId,
         userId,
       },
-
       data: {
         ...values,
       },
     });
+
     return NextResponse.json({
       message: "Course updated successfully",
       course,
     });
   } catch (error) {
-    console.log("[COURSE_ID]", error);
+    console.error("[COURSE_ID_PATCH]", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
