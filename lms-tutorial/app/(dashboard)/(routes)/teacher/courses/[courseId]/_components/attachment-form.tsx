@@ -22,7 +22,10 @@ const formSchema = z.object({
   url: z.string().min(1),
 });
 
-export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
+export const AttachmentForm = ({
+  initialData,
+  courseId,
+}: AttachmentFormProps) => {
   const [isEditing, setEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -39,7 +42,7 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsUploading(true);
-      await axios.patch(`/api/courses/${courseId}/attachments`, values);
+      await axios.post(`/api/courses/${courseId}/attachments`, values);
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
@@ -55,7 +58,9 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
       <div className="font-medium flex items-center justify-between">
         Course Attachments
         <Button onClick={toggleEdit} variant="ghost" disabled={isUploading}>
-          {isEditing ? "Cancel" : (
+          {isEditing ? (
+            "Cancel"
+          ) : (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
               Add a file
@@ -67,7 +72,9 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
       {!isEditing && (
         <>
           {initialData.attachments.length === 0 && (
-            <p className="text-sm mt-2 text-slate-500 italic">No attachments yet</p>
+            <p className="text-sm mt-2 text-slate-500 italic">
+              No attachments yet
+            </p>
           )}
         </>
       )}
@@ -88,11 +95,39 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
               />
             )}
           />
-          {isUploading && <p className="text-sm mt-2 text-blue-500">Uploading...</p>}
+          {isUploading && (
+            <p className="text-sm mt-2 text-blue-500">Uploading...</p>
+          )}
           <div className="text-xs text-muted-foreground mt-4">
             Add anything your students might need to complete the course.
           </div>
         </form>
+      )}
+
+      {!isEditing && (
+        <>
+          {initialData.attachments.length === 0 ? (
+            <p className="text-sm mt-2 text-slate-500 italic">
+              No attachments yet
+            </p>
+          ) : (
+            <ul className="mt-2 space-y-2">
+              {initialData.attachments.map((attachment, index) => (
+                <li key={index} className="text-sm text-blue-600 underline">
+                  <a
+                    href={attachment.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {decodeURIComponent(
+                      attachment.url.split("/").pop() || "File"
+                    )}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );
