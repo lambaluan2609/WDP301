@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import Image from "next/image";
 
 interface FileUploadProps {
+  endPoint: string;
   onChange: (url?: string) => void;
 }
 
