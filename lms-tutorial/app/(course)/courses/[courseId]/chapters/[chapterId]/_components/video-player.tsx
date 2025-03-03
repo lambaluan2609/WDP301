@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { Loader2, Lock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useConfettiStore } from "@/hooks/use-confetti-store";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 interface VideoPlayerProps {
   playbackId?: string;
@@ -27,13 +31,39 @@ export const VideoPlayer = ({
 }: VideoPlayerProps) => {
   const [isReady, setIsReady] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const router = useRouter();
+  const confetti = useConfettiStore();
+
+  const onEnd = async () => {
+    try {
+      if (completeOnEnd) {
+        await axios.put(
+          `/api/courses/${courseId}/chapters/${chapterId}/progress`,
+          {
+            isCompleted: true,
+          }
+        );
+
+        if (!nextChapterId) {
+          confetti.onOpen();
+        }
+        toast.success("Progress updated");
+        router.refresh();
+
+        if (nextChapterId) {
+          router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+        }
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
 
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  if (!hydrated) return <div className="h-[500px] bg-slate-800"></div>; // Placeholder để tránh mismatch
-
+  if (!hydrated) return <div className="h-[500px] bg-slate-800"></div>;
   return (
     <div className="relative aspect-video">
       {!isReady && !isLocked && (
@@ -52,7 +82,13 @@ export const VideoPlayer = ({
           title={title}
           className={cn(!isReady && "hidden")}
           onCanPlay={() => setIsReady(true)}
-          onEnded={() => {}}
+          onEnded={onEnd}
+          onError={(error) => {
+            console.error("MuxPlayer Error:", error);
+            toast.error(
+              "There was an error playing the video. Please try again!"
+            );
+          }}
           autoPlay
           playbackId={playbackId}
         />

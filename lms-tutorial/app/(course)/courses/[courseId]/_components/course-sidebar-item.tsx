@@ -27,7 +27,7 @@ export const CourseSidebarItem = ({
 
   const onClick = () => {
     if (isLocked) {
-      console.log("Chương này bị khóa, không thể truy cập.");
+      console.log("This chapter is locked and inaccessible.");
       return;
     }
 

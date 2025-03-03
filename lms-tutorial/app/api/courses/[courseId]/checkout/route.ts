@@ -56,7 +56,7 @@ export async function POST(
             name: course.title,
             description: course.description ?? "No description available",
           },
-          unit_amount: Math.round(course.price * 100), // Đảm bảo >= 50 cents
+          unit_amount: Math.round(course.price * 100),
         },
       },
     ];
