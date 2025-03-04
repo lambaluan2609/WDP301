@@ -1,7 +1,4 @@
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
 import { Course, Chapter, UserProgress } from "@prisma/client";
-import { redirect } from "next/navigation";
 import { CourseSidebarItem } from "./course-sidebar-item";
 import { CourseProgress } from "@/components/course-progress";
 

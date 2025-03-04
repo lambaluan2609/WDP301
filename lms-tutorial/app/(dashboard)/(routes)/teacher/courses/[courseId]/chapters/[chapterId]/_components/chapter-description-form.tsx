@@ -19,7 +19,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Course } from "@prisma/client";
+
 import { Editor } from "@/components/editor";
 import { Chapter } from "@prisma/client";
 import { Preview } from "@/components/preview";
@@ -37,7 +37,7 @@ const formSchema = z.object({
 export const ChapterDescriptionForm = ({
   initialData,
   courseId,
-  chapterId
+  chapterId,
 }: ChapterDescriptionFormProps) => {
   const [isEditing, setEditing] = useState(false);
 
@@ -55,7 +55,10 @@ export const ChapterDescriptionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
+      await axios.patch(
+        `/api/courses/${courseId}/chapters/${chapterId}`,
+        values
+      );
       toast.success("Chapter updated");
       toggleEdit();
       router.refresh();
@@ -88,9 +91,7 @@ export const ChapterDescriptionForm = ({
         >
           {!initialData.description && "No description"}
           {initialData.description && (
-            <Preview
-              value={initialData.description}
-            />
+            <Preview value={initialData.description} />
           )}
         </div>
       )}
@@ -106,9 +107,7 @@ export const ChapterDescriptionForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Editor
-                      {...field}
-                    />
+                    <Editor {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

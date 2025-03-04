@@ -45,7 +45,7 @@ export async function DELETE(
           await Video.assets.delete(chapter.muxData.assetId);
         } catch (muxError) {
           console.warn(
-            `⚠️ Lỗi khi xóa Mux asset ${chapter.muxData.assetId}:`,
+            `Error when delete Mux asset ${chapter.muxData.assetId}:`,
             muxError
           );
         }
