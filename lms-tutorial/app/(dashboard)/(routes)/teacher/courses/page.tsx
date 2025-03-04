@@ -4,11 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 
-
-
-
 const CoursesPage = async () => {
-
   const { userId } = await auth();
 
   if (!userId) {
@@ -20,7 +16,7 @@ const CoursesPage = async () => {
       userId,
     },
     orderBy: {
-      createdAt: "desc"
+      createdAt: "desc",
     },
   });
 
