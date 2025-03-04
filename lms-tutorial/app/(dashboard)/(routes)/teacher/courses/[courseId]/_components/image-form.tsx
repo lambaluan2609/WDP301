@@ -41,37 +41,36 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   };
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
-        Course image
-        <Button onClick={toggleEdit} variant="ghost">
-          {isEditing && <>Cancel</>}
-          {!isEditing && !imageUrl && (
+    <div className="mt-6 border bg-slate-100 shadow-sm rounded-lg p-5">
+      <div className="font-medium flex items-center justify-between text-gray-800">
+        Course Image
+        <Button
+          onClick={toggleEdit}
+          variant="outline"
+          className="hover:bg-blue-50 transition text-blue-600 border-blue-600"
+        >
+          {isEditing ? (
+            "Cancel"
+          ) : (
             <>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add an image
-            </>
-          )}
-          {!isEditing && imageUrl && (
-            <>
-              <Pencil className="h-4  w-4 mr-2" />
-              Edit image
+              <Pencil className="h-4 w-4 mr-2 text-blue-600" />
+              {imageUrl ? "Edit Image" : "Add Image"}
             </>
           )}
         </Button>
       </div>
 
       {!isEditing && (
-        <div className="flex justify-center items-center w-full">
+        <div className="flex justify-center items-center w-full mt-2">
           {!imageUrl ? (
             <div className="flex items-center justify-center h-40 bg-slate-200 rounded-md w-full max-w-md">
               <ImageIcon className="h-10 w-10 text-slate-500" />
             </div>
           ) : (
-            <div className="relative w-full max-w-md h-40 mt-2">
+            <div className="relative w-full max-w-md h-40">
               <Image
                 alt="Uploaded Image"
-                src={imageUrl.startsWith("http") ? imageUrl : `/fallback.jpg`}
+                src={imageUrl.startsWith("http") ? imageUrl : "/fallback.jpg"}
                 width={320}
                 height={180}
                 className="object-contain rounded-md w-full h-full"
@@ -82,7 +81,7 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
       )}
 
       {isEditing && (
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
           <FileUpload
             endPoint="/api/upload"
             onChange={(url) => {
@@ -92,8 +91,8 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
               }
             }}
           />
-          <div className="text-xs text-muted-foreground mt-4">
-            16:9 aspect ratio recommended
+          <div className="text-xs text-gray-500 italic">
+            Recommended: 16:9 aspect ratio
           </div>
         </div>
       )}

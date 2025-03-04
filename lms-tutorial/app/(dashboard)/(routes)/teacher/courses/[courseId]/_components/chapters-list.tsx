@@ -9,7 +9,6 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import { Badge, Grip, Pencil } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface ChapterListProps {
   items: Chapter[];
@@ -31,20 +30,15 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-    const items = Array.from(chapters);
-    const [reorderItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderItem);
+    const updatedChapters = Array.from(chapters);
+    const [movedItem] = updatedChapters.splice(result.source.index, 1);
+    updatedChapters.splice(result.destination.index, 0, movedItem);
 
-    const startIndex = Math.min(result.source.index, result.destination.index);
-    const endIndex = Math.max(result.source.index, result.destination.index);
+    setChapters(updatedChapters);
 
-    const updatedChapters = items.slice(startIndex, endIndex);
-
-    setChapters(items);
-
-    const bulkUpdateData = updatedChapters.map((chapter) => ({
+    const bulkUpdateData = updatedChapters.map((chapter, index) => ({
       id: chapter.id,
-      position: items.findIndex((item) => item.id === chapter.id),
+      position: index,
     }));
 
     onReorder(bulkUpdateData);
@@ -58,57 +52,60 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="chapters">
         {(provided) => (
-          <div {...provided.droppableProps} ref={provided.innerRef}>
-            {chapters &&
-              chapters.map((chapter, index) => (
-                <Draggable
-                  key={chapter.id}
-                  draggableId={chapter.id}
-                  index={index}
-                >
-                  {(provided) => (
+          <div
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            className="space-y-3"
+          >
+            {chapters.map((chapter, index) => (
+              <Draggable
+                key={chapter.id}
+                draggableId={chapter.id}
+                index={index}
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    className={`flex items-center justify-between rounded-lg p-4 shadow-md transition duration-200 ${
+                      chapter.isPublished
+                        ? "bg-blue-100 border border-blue-300 text-blue-800"
+                        : "bg-gray-100 border border-gray-300 text-gray-700"
+                    }`}
+                  >
                     <div
-                      className={cn(
-                        "flex items-center justify-between p-3 border rounded-md shadow-sm mb-2",
-                        chapter.isPublished
-                          ? "bg-sky-100 border-sky-200 text-sky-700"
-                          : "bg-slate-200 border-slate-200 text-slate-700"
-                      )}
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className="p-2 cursor-grab hover:bg-gray-300 rounded-lg transition"
                     >
-                      <div
-                        className={cn(
-                          "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition",
-                          chapter.isPublished &&
-                            "border-r-sky-200 hover:bg-sky-200"
-                        )}
-                        {...provided.dragHandleProps}
-                      >
-                        <Grip className="h-5 w-5" />
-                      </div>
-                      {chapter.title}
-                      <div className="ml-auto pr-2 flex items-center gap-x-2">
-                        {chapter.isFree && <Badge>Free</Badge>}
-                        <span
-                          className={cn(
-                            "bg-slate-500 px-2 py-1 text-xs font-semibold border rounded-full",
-                            chapter.isPublished
-                              ? "bg-sky-700 border-sky-900"
-                              : "bg-slate-500 border-slate-700"
-                          )}
-                        >
-                          {chapter.isPublished ? "Published" : "Draft"}
-                        </span>
-                        <Pencil
-                          onClick={() => onEdit(chapter.id)}
-                          className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
-                        />
-                      </div>
+                      <Grip className="h-5 w-5 text-gray-600" />
                     </div>
-                  )}
-                </Draggable>
-              ))}
+
+                    <span className="text-lg font-medium">{chapter.title}</span>
+
+                    <div className="flex items-center space-x-3">
+                      {chapter.isFree && (
+                        <Badge className="bg-green-500 text-white px-2 py-1 text-xs rounded-md">
+                          Free
+                        </Badge>
+                      )}
+                      <span
+                        className={`text-xs font-semibold px-3 py-1 rounded-full shadow-sm ${
+                          chapter.isPublished
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-500 text-white"
+                        }`}
+                      >
+                        {chapter.isPublished ? "Published" : "Draft"}
+                      </span>
+                      <Pencil
+                        onClick={() => onEdit(chapter.id)}
+                        className="w-5 h-5 text-gray-600 hover:text-gray-900 cursor-pointer transition"
+                      />
+                    </div>
+                  </div>
+                )}
+              </Draggable>
+            ))}
             {provided.placeholder}
           </div>
         )}
