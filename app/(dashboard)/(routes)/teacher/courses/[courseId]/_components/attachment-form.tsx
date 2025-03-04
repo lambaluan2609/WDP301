@@ -2,19 +2,18 @@
 
 import * as z from "zod";
 import axios from "axios";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, File, Loader2, X } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Course } from "@prisma/client";
+import { Course, Attachment } from "@prisma/client";
 import { FileUpload } from "@/components/file-upload";
 
 interface AttachmentFormProps {
-  initialData: Course & { attachments: { url: string }[] };
+  initialData: Course & { attachments: Attachment[] };
   courseId: string;
 }
 
@@ -24,6 +23,7 @@ const formSchema = z.object({
 
 export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
   const [isEditing, setEditing] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const { control, handleSubmit, setValue } = useForm({
@@ -50,6 +50,19 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
     }
   };
 
+  const onDelete = async (id: string) => {
+    try {
+      setDeletingId(id);
+      await axios.delete(`/api/courses/${courseId}/attachments/${id}`);
+      toast.success("Attachment deleted");
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
@@ -71,29 +84,51 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
           )}
         </>
       )}
-
+      {initialData.attachments.length > 0 && (
+        <div className="space-y-2">
+          {initialData.attachments.map((attachment) => (
+            <div
+              key={attachment.id}
+              className="flex items-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md"
+            >
+              <File className="h-4 w-4 mr-2 flex-shrink-0" />
+              <p className="text-xs line-clamp-1">
+                {attachment.name}
+              </p>
+              {deletingId === attachment.id && (
+                <div>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                </div>
+              )}
+              {deletingId !== attachment.id && (
+                <button
+                  onClick={() => onDelete(attachment.id)}
+                  className="ml-auto hover:opacity-75 transition"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
       {isEditing && (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Controller
-            name="url"
-            control={control}
-            render={({ field }) => (
-              <FileUpload
-                onChange={(url) => {
-                  if (url) {
-                    setValue("url", url);
-                    handleSubmit(onSubmit)();
-                  }
-                }}
-              />
-            )}
+        <div className="mt-4">
+          <FileUpload
+            onChange={(url) => {
+              if (url) {
+                setValue("url", url);
+                onSubmit({ url });
+              }
+            }}
           />
           {isUploading && <p className="text-sm mt-2 text-blue-500">Uploading...</p>}
           <div className="text-xs text-muted-foreground mt-4">
             Add anything your students might need to complete the course.
           </div>
-        </form>
+        </div>
       )}
     </div>
   );
 };
+
