@@ -15,10 +15,7 @@ export async function POST(
     }
 
     const courseOwner = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId: userId,
-      },
+      where: { id: params.courseId, userId },
     });
 
     if (!courseOwner) {
@@ -33,7 +30,41 @@ export async function POST(
       },
     });
 
-    return new NextResponse(JSON.stringify(attachment), { status: 201 });
+    return NextResponse.json(attachment, { status: 201 });
+  } catch (error) {
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
+  try {
+    const { userId } = await auth();
+    const { urls } = await req.json();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const courseOwner = await db.course.findUnique({
+      where: { id: params.courseId, userId },
+    });
+
+    if (!courseOwner) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const attachments = await db.attachment.createMany({
+      data: urls.map((url: string) => ({
+        url,
+        name: url.split("/").pop(),
+        courseId: params.courseId,
+      })),
+    });
+
+    return NextResponse.json(attachments, { status: 200 });
   } catch (error) {
     return new NextResponse("Internal Server Error", { status: 500 });
   }

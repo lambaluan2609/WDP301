@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormMessage,
@@ -19,7 +18,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
 import { Course } from "@prisma/client";
 import { Combobox } from "@/components/ui/combobox";
 
@@ -30,7 +28,7 @@ interface CategoryFormProps {
 }
 
 const formSchema = z.object({
-  categoryId: z.string().min(1), 
+  categoryId: z.string().min(1),
 });
 
 export const CategoryForm = ({
@@ -39,7 +37,6 @@ export const CategoryForm = ({
   options,
 }: CategoryFormProps) => {
   const [isEditing, setEditing] = useState(false);
-
   const toggleEdit = () => setEditing((current) => !current);
 
   const router = useRouter();
@@ -47,7 +44,7 @@ export const CategoryForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-     categoryId: initialData?.description || "",
+      categoryId: initialData?.categoryId || "",
     },
   });
   const { isSubmitting, isValid } = form.formState;
@@ -62,32 +59,44 @@ export const CategoryForm = ({
       toast.error("Something went wrong");
     }
   };
-const selectedOption = options.find((option) => option.value === initialData.categoryId);
+
+  const selectedOption = options.find(
+    (option) => option.value === initialData.categoryId
+  );
+
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
-        Course category
-        <Button onClick={toggleEdit} variant="ghost">
+    <div className="mt-6 border bg-slate-100 shadow-md rounded-lg p-6">
+      <div className="font-semibold flex items-center justify-between text-lg">
+        Course Category
+        <Button
+          onClick={toggleEdit}
+          variant="outline"
+          className="text-blue-600 border-blue-600 hover:bg-blue-100 transition-all"
+        >
           {isEditing ? (
-            <>Cancel</>
+            "Cancel"
           ) : (
             <>
-              <Pencil className="h-4  w-4 mr-2" />
-              Edit category
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit Category
             </>
           )}
         </Button>
       </div>
+
       {!isEditing && (
         <p
           className={cn(
-            "text-sm mt-2",
-            initialData.categoryId && "text-slate-500 italic"
+            "text-sm mt-3 px-4 py-2 rounded-md border",
+            initialData.categoryId
+              ? "text-slate-700 bg-gray-100"
+              : "text-gray-400 italic"
           )}
         >
-          {selectedOption?.label || "No category "}
+          {selectedOption?.label || "No category selected"}
         </p>
       )}
+
       {isEditing && (
         <Form {...form}>
           <form
@@ -100,18 +109,32 @@ const selectedOption = options.find((option) => option.value === initialData.cat
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Combobox
-                    options={options}
-                    value={field.value}
-                    onChange={field.onChange} />
+                    <div className="border border-gray-300 focus-within:ring-2 focus-within:ring-blue-500 transition-all rounded-md">
+                      <Combobox
+                        options={options}
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex items-center gap-x-2">
-              <Button disabled={!isValid || isSubmitting} type="submit">
+            <div className="flex items-center gap-x-3">
+              <Button
+                disabled={!isValid || isSubmitting}
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-all"
+              >
                 Save
+              </Button>
+              <Button
+                onClick={toggleEdit}
+                variant="ghost"
+                className="text-gray-600 hover:bg-gray-100 transition-all"
+              >
+                Cancel
               </Button>
             </div>
           </form>

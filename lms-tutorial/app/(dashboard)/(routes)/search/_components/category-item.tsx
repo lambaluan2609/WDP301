@@ -4,55 +4,53 @@ import qs from "query-string";
 import { cn } from "@/lib/utils";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { IconType } from "react-icons";
-import path from "path";
 
 interface CategoryItemProps {
-    label: string;
-    value?: string;
-    icon?: IconType;
-};
-
-
+  label: string;
+  value?: string;
+  icon?: IconType;
+}
 
 export const CategoryItem = ({
-    label,
-    value,
-    icon: Icon,
+  label,
+  value,
+  icon: Icon,
 }: CategoryItemProps) => {
-    const pathname = usePathname();
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    
-    const currentCategoryId = searchParams.get("categoryId");
-    const currentTitle = searchParams.get("title");
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-    const isSelected = currentCategoryId === value;
+  const currentCategoryId = searchParams.get("categoryId");
+  const currentTitle = searchParams.get("title");
 
-    const onClick = () => {
-        const url = qs.stringifyUrl({
-            url: pathname,
-            query: {
-                title: currentTitle,
-                categoryId: isSelected ? null : value,
-            }
-        }, { skipNull: true, skipEmptyString: true});
+  const isSelected = currentCategoryId === value;
 
-        router.push(url);
-    };
+  const onClick = () => {
+    const url = qs.stringifyUrl(
+      {
+        url: pathname,
+        query: {
+          title: currentTitle,
+          categoryId: isSelected ? null : value,
+        },
+      },
+      { skipNull: true, skipEmptyString: true }
+    );
 
-    return (
-        <button
-        onClick={onClick}
-            className={cn(
-                "py-2 px-3 text-sm border border-slate-200 rounded-full flex items-center gap-x-1 hover:border-sky-700 transition",
-                isSelected && "border-sky-700 bg-sky-200/20 text-sky-800"
-            )}
-            type="button"
-        >
-            {Icon && <Icon size={20} />}
-            <div className="truncate">
-                {label}
-            </div>
-        </button>
-    )
-}
+    router.push(url);
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "py-2 px-3 text-sm border border-slate-200 rounded-full flex items-center gap-x-1 hover:border-sky-700 transition",
+        isSelected && "border-sky-700 bg-sky-200/20 text-sky-800"
+      )}
+      type="button"
+    >
+      {Icon && <Icon size={20} />}
+      <div className="truncate">{label}</div>
+    </button>
+  );
+};
