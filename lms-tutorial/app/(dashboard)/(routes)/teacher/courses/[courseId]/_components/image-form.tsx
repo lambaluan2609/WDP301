@@ -84,6 +84,7 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
       {isEditing && (
         <div className="mt-4">
           <FileUpload
+            endPoint="/api/upload"
             onChange={(url) => {
               if (url) {
                 setImageUrl(url);
