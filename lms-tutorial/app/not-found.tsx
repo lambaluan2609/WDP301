@@ -15,9 +15,7 @@ export default function NotFoundPage() {
         <h1 className="text-7xl font-extrabold tracking-wider animate-bounce">
           404
         </h1>
-        <p className="text-xl mt-3 text-gray-200">
-          Oops! The page is not found.
-        </p>
+        <p className="text-xl mt-3 text-gray-200">Oops! Page not found.</p>
 
         <div className="mt-8 flex justify-center">
           <Button
