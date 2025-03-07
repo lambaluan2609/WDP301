@@ -16,7 +16,7 @@ export default function NotFoundPage() {
           404
         </h1>
         <p className="text-xl mt-3 text-gray-200">
-          Oops! Trang bạn tìm kiếm không tồn tại.
+          Oops! The page is not found.
         </p>
 
         <div className="mt-8 flex justify-center">
@@ -24,7 +24,7 @@ export default function NotFoundPage() {
             className="bg-white text-blue-700 px-6 py-3 rounded-full flex items-center gap-2 shadow-lg transition-all duration-300 transform hover:scale-105 hover:bg-blue-600 hover:text-white"
             onClick={() => router.push("/")}
           >
-            <FaHome className="text-xl" /> Về Trang Chủ
+            <FaHome className="text-xl" /> Back Home
           </Button>
         </div>
       </div>
