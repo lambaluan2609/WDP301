@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { redirect } from "next/navigation";
 
 export async function PATCH(
   req: Request,
@@ -28,7 +29,7 @@ export async function PATCH(
     });
 
     if (!course) {
-      return new NextResponse("Not found", { status: 404 });
+      redirect("/not-found");
     }
 
     const hasPublishChapter = course.chapters.some(

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { isTeacher } from "@/lib/teacher";
+import { redirect } from "next/navigation";
 
 const { video: Video } = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
@@ -36,7 +37,7 @@ export async function DELETE(
     });
 
     if (!course) {
-      return new NextResponse("Not found", { status: 404 });
+      redirect("/not-found");
     }
 
     for (const chapter of course.chapters) {

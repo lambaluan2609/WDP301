@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { redirect } from "next/navigation";
 
 export async function POST(
   req: Request,
@@ -24,7 +25,7 @@ export async function POST(
     });
 
     if (!course) {
-      return new NextResponse("Not found", { status: 404 });
+      redirect("/not-found");
     }
 
     const purchase = await db.purchase.findUnique({

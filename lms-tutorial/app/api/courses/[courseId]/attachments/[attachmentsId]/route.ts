@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
 export async function DELETE(
@@ -32,7 +33,7 @@ export async function DELETE(
     });
 
     if (!attachment) {
-      return new NextResponse("Attachment not found", { status: 404 });
+      redirect("/not-found");
     }
 
     await db.attachment.delete({
