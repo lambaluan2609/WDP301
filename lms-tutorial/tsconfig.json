@@ -23,7 +23,9 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "noUncheckedIndexedAccess": false
   },
   "include": [
     "next-env.d.ts",
