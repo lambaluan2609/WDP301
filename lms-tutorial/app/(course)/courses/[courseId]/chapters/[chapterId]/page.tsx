@@ -14,11 +14,9 @@ const ChapterIdPage = async ({
 }: {
   params: { courseId: string; chapterId: string };
 }) => {
-  const awaitedParams = await params;
-  const { courseId, chapterId } = awaitedParams;
+  const { courseId, chapterId } = params; 
 
   const { userId } = await auth();
-
   if (!userId) {
     return redirect("/");
   }
@@ -113,3 +111,4 @@ const ChapterIdPage = async ({
 };
 
 export default ChapterIdPage;
+
