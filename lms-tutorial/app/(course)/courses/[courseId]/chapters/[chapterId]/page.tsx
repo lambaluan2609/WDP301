@@ -4,17 +4,20 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { VideoPlayer } from "./_components/video-player";
 import { CourseEnrollButton } from "./_components/course-enroll-button";
-import { Separator } from "@radix-ui/react-dropdown-menu";
+import { Separator } from "@radix-ui/react-separator";
 import { Preview } from "@/components/preview";
 import { File } from "lucide-react";
 import { CourseProgressButton } from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/course-progress-button";
 
-const ChapterIdPage = async ({
-  params,
-}: {
-  params: { courseId: string; chapterId: string };
-}) => {
-  const { courseId, chapterId } = params; 
+interface PageProps {
+  params: {
+    courseId: string;
+    chapterId: string;
+  };
+}
+
+const ChapterIdPage = async ({ params }: PageProps) => {
+  const { courseId, chapterId } = params;
 
   const { userId } = await auth();
   if (!userId) {
@@ -60,7 +63,7 @@ const ChapterIdPage = async ({
             title={chapter.title}
             courseId={courseId}
             nextChapterId={nextChapter?.id}
-            playbackId={muxData?.playbackId!}
+            playbackId={muxData?.playbackId || ""}
             isLocked={isLocked}
             completeOnEnd={completeOnEnd}
           />
@@ -84,7 +87,7 @@ const ChapterIdPage = async ({
           </div>
           <Separator />
           <div>
-            <Preview value={chapter.description!} />
+            <Preview value={chapter.description || ""} />
           </div>
           {!!attachments.length && (
             <>
@@ -111,4 +114,3 @@ const ChapterIdPage = async ({
 };
 
 export default ChapterIdPage;
-
