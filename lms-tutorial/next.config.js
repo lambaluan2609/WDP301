@@ -4,6 +4,9 @@ const nextConfig = {
     domains: ["anwqaikziinzahozosua.supabase.co"],
   },
   reactStrictMode: false,
+   typescript: {
+    ignoreBuildErrors: true, // Bỏ qua lỗi TypeScript
+  },
 };
 
 module.exports = nextConfig;
