@@ -3,6 +3,7 @@
 import MuxPlayer from "@mux/mux-player-react";
 import { useEffect, useState } from "react";
 import { Loader2, Lock } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
@@ -10,7 +11,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 
 interface VideoPlayerProps {
-  playbackId?: string | null;
+  playbackId?: string;
   courseId: string;
   chapterId: string;
   nextChapterId?: string;
@@ -63,9 +64,6 @@ export const VideoPlayer = ({
   }, []);
 
   if (!hydrated) return <div className="h-[500px] bg-slate-800"></div>;
-
-  const validPlaybackId = playbackId ?? undefined;
-
   return (
     <div className="relative aspect-video">
       {!isReady && !isLocked && (
@@ -79,7 +77,7 @@ export const VideoPlayer = ({
           <p className="text-sm">This chapter is locked</p>
         </div>
       )}
-      {!isLocked && validPlaybackId && (
+      {!isLocked && playbackId && (
         <MuxPlayer
           title={title}
           className={cn(!isReady && "hidden")}
@@ -92,7 +90,7 @@ export const VideoPlayer = ({
             );
           }}
           autoPlay
-          playbackId={validPlaybackId} 
+          playbackId={playbackId}
         />
       )}
     </div>
