@@ -4,22 +4,47 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { VideoPlayer } from "./_components/video-player";
 import { CourseEnrollButton } from "./_components/course-enroll-button";
-import { Separator } from "@radix-ui/react-separator";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Preview } from "@/components/preview";
 import { File } from "lucide-react";
-import { CourseProgressButton } from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/course-progress-button";
+import { CourseProgressButton } from "./_components/course-progress-button";
+import NotesSectionWithToggle from "./_components/notes-section-with-toggle";
 
-interface PageProps {
-  params: {
-    courseId: string;
-    chapterId: string;
-  };
+interface Chapter {
+  id: string;
+  title: string;
+  description: string;
+  isFree: boolean;
 }
 
-const ChapterIdPage = async ({ params }: PageProps) => {
-  const { courseId, chapterId } = params;
+interface Attachment {
+  id: string;
+  name: string;
+  url: string;
+}
 
+interface MuxData {
+  playbackId?: string;
+}
+
+interface Course {
+  id: string;
+  price?: number;
+}
+
+interface UserProgress {
+  isCompleted?: boolean;
+}
+
+const ChapterIdPage = async ({
+  params,
+}: {
+  params: Promise<{ courseId: string; chapterId: string }>;
+}) => {
+  const resolvedParams = await params; 
+  const { courseId, chapterId } = resolvedParams;
   const { userId } = await auth();
+
   if (!userId) {
     return redirect("/");
   }
@@ -63,7 +88,7 @@ const ChapterIdPage = async ({ params }: PageProps) => {
             title={chapter.title}
             courseId={courseId}
             nextChapterId={nextChapter?.id}
-            playbackId={muxData?.playbackId || ""}
+            playbackId={muxData?.playbackId}
             isLocked={isLocked}
             completeOnEnd={completeOnEnd}
           />
@@ -79,16 +104,20 @@ const ChapterIdPage = async ({ params }: PageProps) => {
                 isCompleted={!!userProgress?.isCompleted}
               />
             ) : (
-              <CourseEnrollButton
-                courseId={courseId}
-                price={course.price ?? 0}
-              />
+              <CourseEnrollButton courseId={courseId} price={course.price ?? 0} />
             )}
           </div>
           <Separator />
           <div>
-            <Preview value={chapter.description || ""} />
+            <Preview value={chapter.description} />
           </div>
+          <NotesSectionWithToggle
+            userId={userId}
+            chapterId={chapterId}
+            courseId={courseId}
+            isLocked={isLocked}
+            initialNotesVisible={true}
+          />
           {!!attachments.length && (
             <>
               <Separator />

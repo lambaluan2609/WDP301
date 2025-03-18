@@ -6,8 +6,6 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { CoursesList } from "@/components/courses-list";
 
-export const dynamic = "force-dynamic";
-
 interface SearchPageProps {
   searchParams: {
     title: string;
@@ -16,6 +14,7 @@ interface SearchPageProps {
 }
 
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
+  const awaitedSearchParams = await searchParams;
   const { userId } = await auth();
 
   if (!userId) {
@@ -30,7 +29,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
 
   const courses = await getCourses({
     userId,
-    ...searchParams,
+    ...awaitedSearchParams,
   });
 
   return (
