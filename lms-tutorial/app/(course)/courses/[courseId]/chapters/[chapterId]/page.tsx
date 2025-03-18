@@ -1,4 +1,5 @@
 import { getChapter } from "@/actions/get-chapter";
+import { getComments } from "@/actions/get-comments";
 import { Banner } from "@/components/banner";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -8,6 +9,8 @@ import { Separator } from "@radix-ui/react-separator";
 import { Preview } from "@/components/preview";
 import { File } from "lucide-react";
 import { CourseProgressButton } from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/course-progress-button";
+import CommentForm from "./_components/comment-form";
+import CommentSection from "./_components/comment-section";
 
 interface PageProps {
   params: {
@@ -17,12 +20,15 @@ interface PageProps {
 }
 
 const ChapterIdPage = async ({ params }: PageProps) => {
-  const { courseId, chapterId } = params;
+  const authData = await auth();
+  const { userId } = authData;
 
-  const { userId } = await auth();
   if (!userId) {
     return redirect("/");
   }
+
+  const { courseId } = await params;
+  const { chapterId } = await params;
 
   const {
     chapter,
@@ -41,6 +47,8 @@ const ChapterIdPage = async ({ params }: PageProps) => {
   if (!chapter || !course) {
     return redirect("/");
   }
+
+  const comments = await getComments({ chapterId });
 
   const isLocked = !chapter.isFree && !purchase;
   const completeOnEnd = !!purchase && !userProgress?.isCompleted;
@@ -107,6 +115,9 @@ const ChapterIdPage = async ({ params }: PageProps) => {
               </div>
             </>
           )}
+          <Separator />
+            <CommentForm chapterId={chapterId} userId={userId} />
+            <CommentSection chapterId={chapterId} comments={comments} />
         </div>
       </div>
     </div>
