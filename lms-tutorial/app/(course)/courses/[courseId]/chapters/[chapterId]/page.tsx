@@ -17,7 +17,7 @@ interface PageProps {
 }
 
 const ChapterIdPage = async ({ params }: PageProps) => {
-  const { courseId, chapterId } = params;
+  const { courseId, chapterId } = await params;
 
   const { userId } = await auth();
   if (!userId) {
