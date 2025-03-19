@@ -37,25 +37,55 @@ export const VideoPlayer = ({
   const onEnd = async () => {
     try {
       if (completeOnEnd) {
-        await axios.put(
+        console.log(
+          `[VIDEO_PLAYER] Video ended: Marking chapter ${chapterId} as completed`
+        );
+
+        const response = await axios.put(
           `/api/courses/${courseId}/chapters/${chapterId}/progress`,
           {
             isCompleted: true,
+          },
+          {
+            timeout: 5000,
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
+
+        console.log("[VIDEO_PLAYER] Progress update response:", response.data);
 
         if (!nextChapterId) {
           confetti.onOpen();
         }
+
         toast.success("Progress updated");
+
+        // Cập nhật UI
+        const timestamp = Date.now();
+
+        // Luôn refresh UI
         router.refresh();
 
-        if (nextChapterId) {
-          router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
-        }
+        // Chuyển hướng theo điều kiện
+        setTimeout(() => {
+          if (nextChapterId) {
+            // Đi đến chapter tiếp theo với timestamp
+            router.push(
+              `/courses/${courseId}/chapters/${nextChapterId}?ts=${timestamp}`
+            );
+          } else {
+            // Ở lại chapter hiện tại nhưng cập nhật timestamp
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set("ts", timestamp.toString());
+            router.replace(currentUrl.toString());
+          }
+        }, 500);
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("[VIDEO_PLAYER] Error updating progress:", error);
+      toast.error("Failed to update progress");
     }
   };
 
@@ -64,6 +94,7 @@ export const VideoPlayer = ({
   }, []);
 
   if (!hydrated) return <div className="h-[500px] bg-slate-800"></div>;
+
   return (
     <div className="relative aspect-video">
       {!isReady && !isLocked && (
@@ -84,7 +115,7 @@ export const VideoPlayer = ({
           onCanPlay={() => setIsReady(true)}
           onEnded={onEnd}
           onError={(error) => {
-            console.error("MuxPlayer Error:", error);
+            console.error("[VIDEO_PLAYER] MuxPlayer Error:", error);
             toast.error(
               "There was an error playing the video. Please try again!"
             );

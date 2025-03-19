@@ -8,22 +8,63 @@ import { Separator } from "@radix-ui/react-separator";
 import { Preview } from "@/components/preview";
 import { File } from "lucide-react";
 import { CourseProgressButton } from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/course-progress-button";
+import { db } from "@/lib/db";
 
 interface PageProps {
   params: {
     courseId: string;
     chapterId: string;
   };
+  searchParams?: {
+    success?: string;
+  };
 }
 
-const ChapterIdPage = async ({ params }: PageProps) => {
+const ChapterIdPage = async ({ params, searchParams }: PageProps) => {
   const { courseId, chapterId } = await params;
+  const awaitedSearchParams = await searchParams;
+  const success = awaitedSearchParams?.success === "1";
 
   const { userId } = await auth();
   if (!userId) {
     return redirect("/");
   }
 
+  // Nếu success=1, kiểm tra và cập nhật purchase nếu cần
+  if (success) {
+    // Không gọi server action revalidateChapterPath ở đây
+    // await revalidateChapterPath(courseId, chapterId);
+
+    // Kiểm tra xem đã có bản ghi purchase trong DB chưa
+    const purchase = await db.purchase.findUnique({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId,
+        },
+      },
+    });
+
+    // Nếu chưa có purchase, tạo mới (phòng trường hợp webhook chưa chạy)
+    if (!purchase) {
+      try {
+        await db.purchase.create({
+          data: {
+            userId,
+            courseId,
+          },
+        });
+        console.log(
+          `[CHAPTER_PAGE] Created purchase for userId=${userId}, courseId=${courseId}`
+        );
+      } catch (error) {
+        console.error("[CHAPTER_PAGE] Failed to create purchase:", error);
+      }
+    }
+  }
+
+  // Vì đã có kiểm tra và cập nhật dữ liệu purchase nếu cần thiết,
+  // nên dữ liệu getChapter sẽ trả về kết quả mới nhất
   const {
     chapter,
     attachments,

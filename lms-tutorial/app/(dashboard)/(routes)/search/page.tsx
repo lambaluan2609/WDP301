@@ -10,12 +10,14 @@ export const dynamic = "force-dynamic";
 
 interface SearchPageProps {
   searchParams: {
-    title: string;
-    categoryId: string;
+    title?: string;
+    categoryId?: string;
   };
 }
 
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
+  const awaitedSearchParams = await searchParams;
+
   const { userId } = await auth();
 
   if (!userId) {
@@ -30,7 +32,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
 
   const courses = await getCourses({
     userId,
-    ...searchParams,
+    ...awaitedSearchParams,
   });
 
   return (
