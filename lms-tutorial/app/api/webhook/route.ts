@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (error: any) {
+    console.error("Webhook signature verification failed:", error.message);
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
@@ -25,23 +26,59 @@ export async function POST(req: Request) {
   const userId = session?.metadata?.userId;
   const courseId = session?.metadata?.courseId;
 
+  console.log(
+    `[WEBHOOK] Event type: ${event.type}, userId: ${userId}, courseId: ${courseId}`
+  );
+
   if (event.type === "checkout.session.completed") {
     if (!userId || !courseId) {
+      console.error(
+        "Webhook Error: Missing metadata in completed session",
+        session
+      );
       return new NextResponse("Webhook Error: Missing metadata", {
         status: 400,
       });
     }
-    await db.purchase.create({
-      data: {
-        courseId: courseId,
-        userId: userId,
-      },
-    });
+
+    try {
+      // Kiểm tra xem đã có bản ghi purchase chưa
+      const existingPurchase = await db.purchase.findUnique({
+        where: {
+          userId_courseId: {
+            userId: userId,
+            courseId: courseId,
+          },
+        },
+      });
+
+      if (existingPurchase) {
+        console.log(
+          `[WEBHOOK] Purchase already exists for userId: ${userId}, courseId: ${courseId}`
+        );
+        return new NextResponse("Purchase already exists", { status: 200 });
+      }
+
+      // Tạo bản ghi purchase mới
+      const purchase = await db.purchase.create({
+        data: {
+          courseId: courseId,
+          userId: userId,
+        },
+      });
+
+      console.log(
+        `[WEBHOOK] Created purchase: ${purchase.id} for userId: ${userId}, courseId: ${courseId}`
+      );
+    } catch (error) {
+      console.error("[WEBHOOK] Error creating purchase:", error);
+      return new NextResponse("Error processing purchase", { status: 500 });
+    }
   } else {
-    return new NextResponse(
-      `Webhook Error: Unhandled event type ${event.type}`,
-      { status: 200 }
-    );
+    console.log(`[WEBHOOK] Unhandled event type: ${event.type}`);
+    return new NextResponse(`Webhook: Unhandled event type ${event.type}`, {
+      status: 200,
+    });
   }
 
   return new NextResponse(null, { status: 200 });
