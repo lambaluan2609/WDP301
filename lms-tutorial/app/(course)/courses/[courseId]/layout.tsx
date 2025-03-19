@@ -28,12 +28,6 @@ const CourseLayout = async ({
     return redirect("/");
   }
 
-  console.log(
-    `[COURSE_LAYOUT] Loading layout for courseId=${courseId}, userId=${userId}, timestamp=${
-      timestamp || "not provided"
-    }`
-  );
-
   const purchase = await db.purchase.findUnique({
     where: {
       userId_courseId: {
