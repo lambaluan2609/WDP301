@@ -42,7 +42,6 @@ export async function POST(req: Request) {
     }
 
     try {
-      // Kiểm tra xem đã có bản ghi purchase chưa
       const existingPurchase = await db.purchase.findUnique({
         where: {
           userId_courseId: {
@@ -59,7 +58,6 @@ export async function POST(req: Request) {
         return new NextResponse("Purchase already exists", { status: 200 });
       }
 
-      // Tạo bản ghi purchase mới
       const purchase = await db.purchase.create({
         data: {
           courseId: courseId,

@@ -5,7 +5,6 @@ export const getProgress = async (
   courseId: string
 ): Promise<number> => {
   try {
-    // Kiểm tra người dùng
     if (!userId || !courseId) {
       console.log("[GET_PROGRESS] Missing required data:", {
         userId,
@@ -14,7 +13,6 @@ export const getProgress = async (
       return 0;
     }
 
-    // Lấy danh sách các chương đã xuất bản cho khóa học
     const publishedChapters = await db.chapter.findMany({
       where: {
         courseId: courseId,
@@ -30,13 +28,11 @@ export const getProgress = async (
       publishedChapters.length
     );
 
-    // Xử lý trường hợp không có chương nào được xuất bản
     if (!publishedChapters.length) {
       console.log("[GET_PROGRESS] No published chapters found");
       return 0;
     }
 
-    // Lấy danh sách các chương đã hoàn thành từ database
     const validCompletedChapters = await db.userProgress.count({
       where: {
         userId: userId,
@@ -54,7 +50,6 @@ export const getProgress = async (
       publishedChapters.length
     );
 
-    // Tính phần trăm tiến độ và làm tròn
     const progressPercentage =
       (validCompletedChapters / publishedChapters.length) * 100;
     const roundedProgress = Math.round(progressPercentage);

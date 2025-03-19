@@ -5,19 +5,17 @@ import { redirect } from "next/navigation";
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
 
-// Tắt cache cho layout này để đảm bảo dữ liệu luôn mới nhất
 export const revalidate = 0;
 
 const CourseLayout = async ({
   children,
   params,
-  searchParams, // Thêm searchParams để layout được re-render khi URL thay đổi
+  searchParams,
 }: {
   children: React.ReactNode;
   params: { courseId: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
-  // Kiểm tra searchParams có tồn tại không và có thuộc tính ts không
   const timestamp =
     searchParams && "ts" in searchParams ? searchParams.ts : undefined;
 

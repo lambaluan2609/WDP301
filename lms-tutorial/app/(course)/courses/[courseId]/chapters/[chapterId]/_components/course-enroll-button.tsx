@@ -21,13 +21,11 @@ export const CourseEnrollButton = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  // Lấy chapterId từ pathname (đường dẫn hiện tại)
   const getChapterId = () => {
     const parts = pathname.split("/");
-    return parts[parts.length - 1]; // Phần tử cuối cùng trong URL là chapterId
+    return parts[parts.length - 1];
   };
 
-  // Kiểm tra xem người dùng đã thanh toán chưa khi component được render
   useEffect(() => {
     const checkPurchaseStatus = async () => {
       try {
@@ -37,9 +35,6 @@ export const CourseEnrollButton = ({
         if (response.data.isPurchased) {
           setIsPurchased(true);
 
-          // Thay vì dùng router.refresh(), sử dụng router.push() với tham số success=reload
-          // Điều này sẽ khiến Next.js tải lại trang server-side với dữ liệu mới
-          // mà không cần dùng revalidatePath trong quá trình render
           const url = new URL(window.location.href);
           url.searchParams.set("reload", Date.now().toString());
           router.push(url.toString());
@@ -58,7 +53,6 @@ export const CourseEnrollButton = ({
 
       const response = await axios.post(`/api/courses/${courseId}/checkout`);
 
-      // Thêm tham số timestamp để tránh cache khi quay lại
       const checkoutUrl = new URL(response.data.url);
       checkoutUrl.searchParams.append("t", Date.now().toString());
 
@@ -71,7 +65,6 @@ export const CourseEnrollButton = ({
     }
   };
 
-  // Nếu đã thanh toán, không hiển thị nút enroll
   if (isPurchased) {
     return null;
   }

@@ -24,8 +24,7 @@ export default function NotFoundPage() {
             className="bg-white text-blue-700 px-6 py-3 rounded-full flex items-center gap-2 shadow-lg transition-all duration-300 transform hover:scale-105 hover:bg-blue-600 hover:text-white"
             onClick={() => router.push("/")}
           >
-            
-            <FaHome className="text-xl"  /> Back Home
+            <FaHome className="text-xl" /> Back Home
           </Button>
         </div>
       </div>

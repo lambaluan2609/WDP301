@@ -12,15 +12,12 @@ const CourseIdPage = async ({
   const awaitedParams = await params;
   const { courseId } = awaitedParams;
 
-  // Đảm bảo searchParams được awaited trước khi sử dụng
   const awaitedSearchParams = await searchParams;
   const success = awaitedSearchParams.success === "1";
 
   const { userId } = await auth();
 
-  // Nếu success=1 và có userId, kiểm tra lại dữ liệu purchase
   if (success && userId) {
-    // Kiểm tra xem đã có bản ghi purchase trong DB chưa
     const purchase = await db.purchase.findUnique({
       where: {
         userId_courseId: {
@@ -30,7 +27,6 @@ const CourseIdPage = async ({
       },
     });
 
-    // Nếu chưa có purchase, tạo mới (phòng trường hợp webhook chưa chạy)
     if (!purchase) {
       try {
         await db.purchase.create({

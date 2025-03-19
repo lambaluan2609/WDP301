@@ -2,7 +2,6 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-// Lưu trữ tiến trình tạm thời trong memory
 interface ProgressRecord {
   userId: string;
   chapterId: string;
@@ -10,7 +9,6 @@ interface ProgressRecord {
   timestamp: Date;
 }
 
-// Map userId_chapterId => ProgressRecord
 const memoryProgressStore = new Map<string, ProgressRecord>();
 
 export async function PUT(
@@ -41,10 +39,8 @@ export async function PUT(
       isCompleted,
     });
 
-    // Tạo khóa duy nhất cho tiến trình
     const progressKey = `${userId}_${chapterId}`;
 
-    // Lưu vào memory store
     const progressRecord: ProgressRecord = {
       userId,
       chapterId,
@@ -59,9 +55,7 @@ export async function PUT(
       progressRecord
     );
 
-    // Đồng thời cũng thử lưu vào database
     try {
-      // Kiểm tra xem chapter có tồn tại không
       const chapter = await db.chapter.findUnique({
         where: { id: chapterId },
       });
@@ -71,7 +65,6 @@ export async function PUT(
         return new NextResponse("Chapter not found", { status: 404 });
       }
 
-      // Kiểm tra xem userProgress đã tồn tại chưa
       const existingProgress = await db.userProgress.findUnique({
         where: {
           userId_chapterId: {
@@ -111,7 +104,6 @@ export async function PUT(
         dbError instanceof Error ? dbError.message : String(dbError)
       );
 
-      // Nếu lỗi database, trả về dữ liệu từ memory store
       const mockProgress = {
         id: `memory_${Date.now()}`,
         userId,
@@ -147,10 +139,8 @@ export async function GET(
       return new NextResponse("Missing chapterId", { status: 400 });
     }
 
-    // Tạo khóa duy nhất cho tiến trình
     const progressKey = `${userId}_${chapterId}`;
 
-    // Thử lấy từ database trước
     try {
       const dbProgress = await db.userProgress.findUnique({
         where: {
@@ -171,7 +161,6 @@ export async function GET(
       );
     }
 
-    // Nếu không có trong database, thử lấy từ memory store
     const memoryProgress = memoryProgressStore.get(progressKey);
     if (memoryProgress) {
       const result = {
@@ -185,7 +174,6 @@ export async function GET(
       return NextResponse.json(result);
     }
 
-    // Không tìm thấy trong cả database và memory store
     return new NextResponse("Progress not found", { status: 404 });
   } catch (error) {
     console.log(
