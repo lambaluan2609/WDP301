@@ -15,7 +15,6 @@ export async function GET(
 
     const { courseId } = params;
 
-    // Kiểm tra xem có bản ghi purchase không
     const purchase = await db.purchase.findUnique({
       where: {
         userId_courseId: {
@@ -25,7 +24,6 @@ export async function GET(
       },
     });
 
-    // Ghi log để dễ dàng debug
     console.log(
       `[PURCHASE_STATUS] userId=${userId}, courseId=${courseId}, purchase=${!!purchase}`
     );

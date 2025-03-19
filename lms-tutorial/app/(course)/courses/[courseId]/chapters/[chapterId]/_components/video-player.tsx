@@ -62,21 +62,16 @@ export const VideoPlayer = ({
 
         toast.success("Progress updated");
 
-        // Cập nhật UI
         const timestamp = Date.now();
 
-        // Luôn refresh UI
         router.refresh();
 
-        // Chuyển hướng theo điều kiện
         setTimeout(() => {
           if (nextChapterId) {
-            // Đi đến chapter tiếp theo với timestamp
             router.push(
               `/courses/${courseId}/chapters/${nextChapterId}?ts=${timestamp}`
             );
           } else {
-            // Ở lại chapter hiện tại nhưng cập nhật timestamp
             const currentUrl = new URL(window.location.href);
             currentUrl.searchParams.set("ts", timestamp.toString());
             router.replace(currentUrl.toString());

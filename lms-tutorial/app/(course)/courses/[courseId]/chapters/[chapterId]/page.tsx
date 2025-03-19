@@ -30,12 +30,7 @@ const ChapterIdPage = async ({ params, searchParams }: PageProps) => {
     return redirect("/");
   }
 
-  // Nếu success=1, kiểm tra và cập nhật purchase nếu cần
   if (success) {
-    // Không gọi server action revalidateChapterPath ở đây
-    // await revalidateChapterPath(courseId, chapterId);
-
-    // Kiểm tra xem đã có bản ghi purchase trong DB chưa
     const purchase = await db.purchase.findUnique({
       where: {
         userId_courseId: {
@@ -45,7 +40,6 @@ const ChapterIdPage = async ({ params, searchParams }: PageProps) => {
       },
     });
 
-    // Nếu chưa có purchase, tạo mới (phòng trường hợp webhook chưa chạy)
     if (!purchase) {
       try {
         await db.purchase.create({
@@ -63,8 +57,6 @@ const ChapterIdPage = async ({ params, searchParams }: PageProps) => {
     }
   }
 
-  // Vì đã có kiểm tra và cập nhật dữ liệu purchase nếu cần thiết,
-  // nên dữ liệu getChapter sẽ trả về kết quả mới nhất
   const {
     chapter,
     attachments,
