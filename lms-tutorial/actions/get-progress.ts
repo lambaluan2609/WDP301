@@ -6,10 +6,6 @@ export const getProgress = async (
 ): Promise<number> => {
   try {
     if (!userId || !courseId) {
-      console.log("[GET_PROGRESS] Missing required data:", {
-        userId,
-        courseId,
-      });
       return 0;
     }
 
@@ -23,13 +19,7 @@ export const getProgress = async (
       },
     });
 
-    console.log(
-      "[GET_PROGRESS] Found published chapters:",
-      publishedChapters.length
-    );
-
     if (!publishedChapters.length) {
-      console.log("[GET_PROGRESS] No published chapters found");
       return 0;
     }
 
@@ -43,29 +33,12 @@ export const getProgress = async (
       },
     });
 
-    console.log(
-      "[GET_PROGRESS] Completed chapters from DB:",
-      validCompletedChapters,
-      "out of",
-      publishedChapters.length
-    );
-
     const progressPercentage =
       (validCompletedChapters / publishedChapters.length) * 100;
     const roundedProgress = Math.round(progressPercentage);
 
-    console.log(
-      "[GET_PROGRESS] Final progress percentage:",
-      roundedProgress,
-      "%"
-    );
-
     return roundedProgress;
   } catch (error) {
-    console.log(
-      "[GET_PROGRESS] Error calculating progress:",
-      error instanceof Error ? error.message : String(error)
-    );
     return 0;
   }
 };
