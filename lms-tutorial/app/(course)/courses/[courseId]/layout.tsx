@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
+import Footer from "@/components/footer"; // Import Footer component
 
 export const revalidate = 0;
 
@@ -69,7 +70,7 @@ const CourseLayout = async ({
   console.log(`[COURSE_LAYOUT] Progress count: ${progressCount}%`);
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col min-h-screen">
       <div className="h-[80px] md:pl-80 fixed inset-y-0 w-full z-50">
         <CourseNavbar course={course} progressCount={progressCount} />
       </div>
@@ -80,7 +81,10 @@ const CourseLayout = async ({
           purchase={!!purchase}
         />
       </div>
-      <main className="md:pl-80 pt-[80px] h-full">{children}</main>
+      <main className="md:pl-80 pt-[80px] flex-grow">{children}</main>
+      <div className="w-full h-10 relative z-50">
+                <Footer />
+              </div>
     </div>
   );
 };
