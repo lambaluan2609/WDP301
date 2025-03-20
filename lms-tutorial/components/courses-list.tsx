@@ -3,6 +3,7 @@ import { CourseCard } from "@/components/course-card";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
+import { SearchInput } from "@/components/search-input";
 
 type CourseWithProgressWithCategory = Course & {
     category: Category | null;
@@ -12,10 +13,16 @@ type CourseWithProgressWithCategory = Course & {
 
 interface CoursesListProps {
     items: CourseWithProgressWithCategory[];
+    isSearchPage: boolean;
+    isDashboardPage: boolean;
+    isHomePage: boolean;
 }
 
 export const CoursesList = ({
-    items
+    items,
+    isSearchPage,
+    isDashboardPage,
+    isHomePage
 }: CoursesListProps) => {
     return (
         <div>
@@ -52,6 +59,11 @@ export const CoursesList = ({
                     />
                 ))}
             </div>
+            {(isSearchPage || isDashboardPage || isHomePage) && (
+                <div className="hidden md:block w-[300px] ml-8">
+                    <SearchInput/>
+                </div>
+            )}
         </div>
     )
 }
