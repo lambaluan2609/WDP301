@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
 import { Chapter, Attachment } from "@prisma/client";
-// import { revalidatePath } from "next/cache";
 
 interface GetChapterProps {
   userId: string;
@@ -14,10 +13,6 @@ export const getChapter = async ({
   chapterId,
 }: GetChapterProps) => {
   try {
-    // Revalidate cache để đảm bảo lấy dữ liệu mới nhất
-    // revalidatePath(`/courses/${courseId}/chapters/${chapterId}`);
-
-    // Kiểm tra purchase với .findUnique thay vì .findFirst để đảm bảo kết quả chính xác
     const purchase = await db.purchase.findUnique({
       where: {
         userId_courseId: {
