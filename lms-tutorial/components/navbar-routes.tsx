@@ -39,6 +39,7 @@ export const NavbarRoutes = () => {
 
   return (
     <nav className="flex w-full justify-between items-center px-6 md:px-10 py-4 bg-white/80 backdrop-blur-sm shadow-sm border-b sticky top-0 z-50">
+
       {/* LOGO */}
       <motion.div
         initial={{ opacity: 0, x: -10 }}
@@ -55,6 +56,7 @@ export const NavbarRoutes = () => {
           </div>
           <span className="font-bold text-lg whitespace-nowrap bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             LMS Management System
+
           </span>
         </Link>
       </motion.div>
@@ -80,10 +82,11 @@ export const NavbarRoutes = () => {
         ))}
       </div>
 
+
       {/* SEARCH INPUT */}
       {(isSearchPage || isDashboardPage || isHomePage) && (
         <div className="hidden md:block w-[300px] ml-8">
-          <SearchInput/>
+          <SearchInput />
         </div>
       )}
 
@@ -97,7 +100,7 @@ export const NavbarRoutes = () => {
               className="flex items-center gap-x-1 hover:bg-red-50 transition-all duration-300 hover:scale-105"
             >
               <LogOut className="h-4 w-4 text-red-500" />
-              <span className="text-sm whitespace-nowrap">Exit Teacher Mode</span>
+              <span className="text-sm whitespace-nowrap">Exit</span>
             </Button>
           </Link>
         ) : isTeacher(userId) ? (
@@ -107,7 +110,7 @@ export const NavbarRoutes = () => {
               variant="outline"
               className="flex items-center gap-x-1 hover:bg-green-50 transition-all duration-300 hover:scale-105 border-green-200 hover:border-green-300"
             >
-              <BookOpen className="h-4 w-4 text-green-600" />
+              <GraduationCap className="h-4 w-4 text-green-600" />
               <span className="text-sm whitespace-nowrap">Teacher Mode</span>
             </Button>
           </Link>
