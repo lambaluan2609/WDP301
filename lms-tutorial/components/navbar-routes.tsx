@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useAuth, UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { LogOut, BookOpen, Home, Search } from "lucide-react";
+import { LogOut, BookOpen, Home, Search, GraduationCap } from "lucide-react";
 import { SearchInput } from "./search-input";
 import { isTeacher } from "@/lib/teacher";
 import { cn } from "@/lib/utils";
@@ -38,8 +38,7 @@ export const NavbarRoutes = () => {
   ];
 
   return (
-    <nav className="flex w-full justify-between items-center px-6 md:px-10 py-4 bg-white/80 backdrop-blur-sm shadow-sm border-b sticky top-0 z-50">
-
+    <nav className="flex w-full justify-between items-center px-6 md:px-10 py-4 sticky top-0 z-50">
       {/* LOGO */}
       <motion.div
         initial={{ opacity: 0, x: -10 }}
@@ -56,7 +55,6 @@ export const NavbarRoutes = () => {
           </div>
           <span className="font-bold text-lg whitespace-nowrap bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             LMS Management System
-
           </span>
         </Link>
       </motion.div>
@@ -64,15 +62,13 @@ export const NavbarRoutes = () => {
       {/* NAV LINKS */}
       <div className="hidden md:flex items-center gap-4 ml-8">
         {routes.map((route) => (
-          <Link
-            key={route.href}
-            href={route.href}
-          >
+          <Link key={route.href} href={route.href}>
             <Button
               variant={pathname === route.href ? "secondary" : "ghost"}
               className={cn(
                 "w-full justify-start gap-x-2 font-medium transition-all duration-300 hover:scale-105",
-                pathname === route.href && "bg-primary/10 hover:bg-primary/20 shadow-sm"
+                pathname === route.href &&
+                  "bg-primary/10 hover:bg-primary/20 shadow-sm"
               )}
             >
               <route.icon className={cn("h-4 w-4", route.color)} />
@@ -81,7 +77,6 @@ export const NavbarRoutes = () => {
           </Link>
         ))}
       </div>
-
 
       {/* SEARCH INPUT */}
       {(isSearchPage || isDashboardPage || isHomePage) && (
