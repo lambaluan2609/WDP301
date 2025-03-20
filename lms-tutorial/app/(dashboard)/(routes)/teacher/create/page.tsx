@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -48,6 +49,13 @@ const CreatePage = () => {
   return (
     <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">
       <div className="bg-white shadow-md rounded-lg p-8 w-full">
+        <Link
+          href={`/teacher/courses`}
+          className="flex items-center text-sm text-gray-600 hover:opacity-75 transition mb-10"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to course setup
+        </Link>
         <div>
           <h1 className="text-2xl">Name your course</h1>
           <p className="text-sm text-slate-600">

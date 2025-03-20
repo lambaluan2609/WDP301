@@ -4,20 +4,19 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
+import Footer from "@/components/footer"; // Import Footer component
 
-// Tắt cache cho layout này để đảm bảo dữ liệu luôn mới nhất
 export const revalidate = 0;
 
 const CourseLayout = async ({
   children,
   params,
-  searchParams, // Thêm searchParams để layout được re-render khi URL thay đổi
+  searchParams,
 }: {
   children: React.ReactNode;
   params: { courseId: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
-  // Kiểm tra searchParams có tồn tại không và có thuộc tính ts không
   const timestamp =
     searchParams && "ts" in searchParams ? searchParams.ts : undefined;
 
@@ -29,12 +28,6 @@ const CourseLayout = async ({
   if (!userId) {
     return redirect("/");
   }
-
-  console.log(
-    `[COURSE_LAYOUT] Loading layout for courseId=${courseId}, userId=${userId}, timestamp=${
-      timestamp || "not provided"
-    }`
-  );
 
   const purchase = await db.purchase.findUnique({
     where: {
@@ -77,7 +70,7 @@ const CourseLayout = async ({
   console.log(`[COURSE_LAYOUT] Progress count: ${progressCount}%`);
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col min-h-screen">
       <div className="h-[80px] md:pl-80 fixed inset-y-0 w-full z-50">
         <CourseNavbar course={course} progressCount={progressCount} />
       </div>
@@ -88,7 +81,10 @@ const CourseLayout = async ({
           purchase={!!purchase}
         />
       </div>
-      <main className="md:pl-80 pt-[80px] h-full">{children}</main>
+      <main className="md:pl-80 pt-[80px] flex-grow">{children}</main>
+      <div className="w-full h-10 relative z-50">
+                <Footer />
+              </div>
     </div>
   );
 };

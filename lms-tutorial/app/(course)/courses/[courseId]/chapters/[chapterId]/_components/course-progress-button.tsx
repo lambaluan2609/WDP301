@@ -29,7 +29,6 @@ export const CourseProgressButton = ({
     try {
       setIsLoading(true);
 
-      // Ghi log thông tin request
       const requestData = { isCompleted: !isCompleted };
       console.log(`[PROGRESS_BUTTON] Sending update request:`, {
         chapterId,
@@ -50,28 +49,22 @@ export const CourseProgressButton = ({
 
       console.log("[PROGRESS_BUTTON] API response:", response.data);
 
-      // Xử lý thành công
       if (!isCompleted && !nextChapterId) {
         confetti.onOpen();
       }
 
       toast.success("Progress updated");
 
-      // Cập nhật UI
       const timestamp = Date.now();
 
-      // Luôn refresh UI
       router.refresh();
 
-      // Chuyển hướng theo điều kiện
       setTimeout(() => {
         if (!isCompleted && nextChapterId) {
-          // Đi đến chapter tiếp theo với timestamp
           router.push(
             `/courses/${courseId}/chapters/${nextChapterId}?ts=${timestamp}`
           );
         } else {
-          // Ở lại chapter hiện tại nhưng cập nhật timestamp
           const currentUrl = new URL(window.location.href);
           currentUrl.searchParams.set("ts", timestamp.toString());
           router.replace(currentUrl.toString());
