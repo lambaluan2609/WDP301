@@ -1,4 +1,5 @@
 import { getChapter } from "@/actions/get-chapter";
+import { getComments } from "@/actions/get-comments";
 import { Banner } from "@/components/banner";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -9,6 +10,9 @@ import { Preview } from "@/components/preview";
 import { File } from "lucide-react";
 import { CourseProgressButton } from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/course-progress-button";
 import { db } from "@/lib/db";
+import NotesSectionWithToggle from "./_components/notes-section-with-toggle";
+import CommentForm from "./_components/comment-form";
+import CommentSection from "./_components/comment-section";
 
 interface PageProps {
   params: {
@@ -83,6 +87,8 @@ const ChapterIdPage = async ({ params, searchParams }: PageProps) => {
     return redirect("/");
   }
 
+  const comments = await getComments({ chapterId });
+
   const isLocked = !chapter.isFree && !purchase;
   const completeOnEnd = !!purchase && !userProgress?.isCompleted;
 
@@ -130,6 +136,16 @@ const ChapterIdPage = async ({ params, searchParams }: PageProps) => {
           <div>
             <Preview value={chapter.description || ""} />
           </div>
+          <div>
+            <NotesSectionWithToggle
+              userId={userId}
+              chapterId={chapterId}
+              courseId={courseId}
+              isLocked={isLocked}
+              initialNotesVisible={true}
+            />
+
+          </div>
           {!!attachments.length && (
             <>
               <Separator />
@@ -148,6 +164,9 @@ const ChapterIdPage = async ({ params, searchParams }: PageProps) => {
               </div>
             </>
           )}
+          <Separator />
+            <CommentForm chapterId={chapterId} userId={userId} />
+            <CommentSection chapterId={chapterId} comments={comments} />
         </div>
       </div>
     </div>
