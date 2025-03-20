@@ -3,6 +3,7 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
 
 interface Message {
   text: string;
@@ -110,7 +111,7 @@ const ChatBox = () => {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 rounded-lg shadow-lg">
             {messages.length === 0 && (
               <div className="text-center text-gray-500 mt-4">
                 Xin chào! Tôi có thể giúp gì cho bạn?
@@ -119,7 +120,7 @@ const ChatBox = () => {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`max-w-[85%] p-3 rounded-lg shadow-sm ${
+                className={`max-w-[85%] p-3 rounded-lg shadow-sm transition-all duration-200 ${
                   message.sender === "user"
                     ? "ml-auto bg-blue-600 text-white rounded-br-none"
                     : "bg-gray-100 rounded-bl-none"
@@ -147,23 +148,16 @@ const ChatBox = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Nhập câu hỏi của bạn..."
-                className="flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
                 disabled={isLoading}
               />
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
                 className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-                </svg>
-              </button>
+                Gửi
+              </Button>
             </div>
           </form>
         </div>
