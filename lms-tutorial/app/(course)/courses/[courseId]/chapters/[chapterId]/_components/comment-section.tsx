@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CommentItem } from "./comment-item";
+import { useUser } from "@clerk/nextjs";
 
 interface Comment {
   id: string;
@@ -18,6 +19,7 @@ interface CommentSectionProps {
 
 const CommentSection = ({ chapterId, comments }: CommentSectionProps) => {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const { user } = useUser();
 
   return (
     <div className="mt-8">
@@ -40,6 +42,7 @@ const CommentSection = ({ chapterId, comments }: CommentSectionProps) => {
               showReplyForm={replyingTo === comment.id}
               chapterId={chapterId}
               userId={comment.userId}
+              userName={user?.fullName || "Anonymous User"}
             />
           ))
         )}
