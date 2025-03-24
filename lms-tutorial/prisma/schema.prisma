@@ -61,6 +61,7 @@ model Chapter {
   muxData      MuxData?
   course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   userProgress UserProgress[]
+  comments Comment[]
 
   @@index([courseId])
 }
@@ -107,18 +108,40 @@ model StripeCustomer {
 }
 
 model Comment {
-  id        String   @id
+  id        String   @id @default(uuid())
   userId    String
   chapterId String
   content   String
-  createdAt DateTime @default(now())
   parentId  String?
 
+  createdAt DateTime @default(now())
+
+  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  user    User    @relation("UserComments", fields: [userId], references: [id], onDelete: Cascade)
+
+  replies Comment[] @relation("CommentReplies")
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+
+  
   @@index([chapterId])
 }
+
 
 model User {
   id    String  @id
   email String? @unique
   name  String?
+  comments Comment[] @relation("UserComments")
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  userId    String
+  chapterId String
+  courseId  String
+  timestamp Int
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
