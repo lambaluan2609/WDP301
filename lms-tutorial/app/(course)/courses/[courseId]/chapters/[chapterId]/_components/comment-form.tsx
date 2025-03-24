@@ -20,13 +20,14 @@ import { Button } from "@/components/ui/button";
 interface CommentFormProps {
   chapterId: string;
   userId: string;
+  parentId?: string;
 }
 
 const formSchema = z.object({
   comment: z.string().min(1, "Comment cannot be empty"),
 });
 
-const CommentForm = ({ chapterId, userId }: CommentFormProps) => {
+const CommentForm = ({ chapterId, userId, parentId }: CommentFormProps) => {
   const router = useRouter();
   const [isFocused, setIsFocused] = useState(false);
 
@@ -43,6 +44,7 @@ const CommentForm = ({ chapterId, userId }: CommentFormProps) => {
         userId,
         chapterId,
         content: values.comment,
+        parentId,
       });
 
       toast.success("Comment added successfully!");

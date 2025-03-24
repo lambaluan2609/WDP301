@@ -9,7 +9,7 @@ export const getComments = async ({ chapterId }: GetCommentsProps) => {
     await db.$connect();
     const comments = await db.comment.findMany({
       where: { chapterId },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "asc" },
     });
 
     return comments.map((comment) => ({

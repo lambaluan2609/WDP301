@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       return new NextResponse("Invalid JSON payload", { status: 400 });
     }
 
-    const { chapterId, content } = body;
+    const { chapterId, content, parentId } = body;
 
     if (!chapterId || !content) {
       return new NextResponse("Missing required fields", { status: 400 });
@@ -27,6 +27,7 @@ export async function POST(req: Request) {
         userId,
         chapterId,
         content,
+        parentId,
       },
     });
 

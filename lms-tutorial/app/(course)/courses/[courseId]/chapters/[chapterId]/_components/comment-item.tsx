@@ -5,6 +5,17 @@ import { MessageSquare } from "lucide-react";
 import CommentForm from "./comment-form";
 import { useUser } from "@clerk/nextjs";
 
+
+interface CommentType {
+  id: string;
+  userId: string;
+  chapterId: string;
+  content: string;
+  createdAt: string;
+  parentId: string | null;
+  userName: string;
+}
+
 interface CommentItemProps {
   id: string;
   content: string;
@@ -15,6 +26,7 @@ interface CommentItemProps {
   chapterId: string;
   userId: string;
   userName: string;
+  replies?: CommentType[];
 }
 
 export const CommentItem = ({
@@ -27,6 +39,7 @@ export const CommentItem = ({
   chapterId,
   userId,
   userName,
+  replies,
 }: CommentItemProps) => {
   const { user } = useUser();
   return (
@@ -62,9 +75,27 @@ export const CommentItem = ({
 
         {showReplyForm && (
           <div className="mt-4 ml-4">
-            <CommentForm chapterId={chapterId} userId={userId} />
+            <CommentForm chapterId={chapterId} userId={userId} parentId={id} />
           </div>
         )}
+         {replies && replies.length > 0 && (
+            <div className="mt-4 ml-6 border-l border-gray-200 pl-4 space-y-4">
+              {replies.map((reply) => (
+                <CommentItem
+                  key={reply.id}
+                  id={reply.id}
+                  content={reply.content}
+                  createdAt={reply.createdAt}
+                  isReplying={false}
+                  onReplyClick={() => {}}
+                  showReplyForm={false}
+                  chapterId={reply.chapterId}
+                  userId={reply.userId}
+                  userName={reply.userName}
+                />
+              ))}
+            </div>
+          )}
       </div>
     </div>
   );
