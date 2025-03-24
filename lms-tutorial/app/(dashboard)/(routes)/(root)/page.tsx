@@ -31,7 +31,12 @@ export default async function Home() {
           variant="success"
         />
       </div>
-      <CoursesList items={[...coursesInProgress, ...completedCourses]} />
+      <CoursesList
+        items={[...coursesInProgress, ...completedCourses]}
+        isDashboardPage={false}
+        isSearchPage={false}
+        isHomePage={false}
+      />
     </div>
   );
 }
