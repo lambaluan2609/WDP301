@@ -5,7 +5,6 @@ import { MessageSquare } from "lucide-react";
 import CommentForm from "./comment-form";
 import { useUser } from "@clerk/nextjs";
 
-
 interface CommentType {
   id: string;
   userId: string;
@@ -53,7 +52,7 @@ export const CommentItem = ({
       </div>
 
       <div className="flex-1">
-        <p className="text-sm font-semibold text-gray-900">{user?.fullName}</p>
+        <p className="text-sm font-semibold text-gray-900">{userName}</p>
 
         <div
           className="text-sm text-gray-800"
@@ -78,24 +77,24 @@ export const CommentItem = ({
             <CommentForm chapterId={chapterId} userId={userId} parentId={id} />
           </div>
         )}
-         {replies && replies.length > 0 && (
-            <div className="mt-4 ml-6 border-l border-gray-200 pl-4 space-y-4">
-              {replies.map((reply) => (
-                <CommentItem
-                  key={reply.id}
-                  id={reply.id}
-                  content={reply.content}
-                  createdAt={reply.createdAt}
-                  isReplying={false}
-                  onReplyClick={() => {}}
-                  showReplyForm={false}
-                  chapterId={reply.chapterId}
-                  userId={reply.userId}
-                  userName={reply.userName}
-                />
-              ))}
-            </div>
-          )}
+        {replies && replies.length > 0 && (
+          <div className="mt-4 ml-6 border-l border-gray-200 pl-4 space-y-4">
+            {replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                id={reply.id}
+                content={reply.content}
+                createdAt={reply.createdAt}
+                isReplying={false}
+                onReplyClick={() => {}}
+                showReplyForm={false}
+                chapterId={reply.chapterId}
+                userId={reply.userId}
+                userName={reply.userName}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
