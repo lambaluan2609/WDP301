@@ -50,7 +50,6 @@ export const NavbarRoutes = () => {
           className="flex items-center space-x-2 hover:opacity-80 transition-all duration-300 group"
         >
           <div className="relative">
-            <BookOpen className="h-6 w-6 text-primary transition-transform duration-300 group-hover:scale-110" />
             <div className="absolute inset-0 bg-primary/10 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
           <span className="font-bold text-lg whitespace-nowrap bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
