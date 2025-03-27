@@ -136,7 +136,6 @@ const ChapterIdPage = async ({ params, searchParams }: PageProps) => {
               isLocked={isLocked}
               initialNotesVisible={true}
             />
-
           </div>
           {!!attachments.length && (
             <>
@@ -157,8 +156,7 @@ const ChapterIdPage = async ({ params, searchParams }: PageProps) => {
             </>
           )}
           <Separator />
-            <CommentForm chapterId={chapterId} userId={userId} />
-            <CommentSection chapterId={chapterId} comments={comments} />
+          <CommentSection chapterId={chapterId} comments={comments} />
         </div>
       </div>
     </div>

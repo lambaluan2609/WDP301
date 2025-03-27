@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CommentItem } from "./comment-item";
 import { useUser } from "@clerk/nextjs";
-
+import CommentForm from "./comment-form";
 
 interface Comment {
   id: string;
@@ -24,7 +24,13 @@ const CommentSection = ({ chapterId, comments }: CommentSectionProps) => {
   const { user } = useUser();
   const [commentsList, setCommentsList] = useState<Comment[]>(comments);
 
-  const topLevelComments = commentsList.filter((c) => c.parentId === null);
+  const topLevelComments = commentsList
+    .filter((c) => c.parentId === null)
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
   const repliesMap = commentsList.reduce((acc, comment) => {
     if (comment.parentId) {
       if (!acc[comment.parentId]) {
@@ -35,7 +41,20 @@ const CommentSection = ({ chapterId, comments }: CommentSectionProps) => {
     return acc;
   }, {} as Record<string, Comment[]>);
 
+  Object.keys(repliesMap).forEach((parentId) => {
+    repliesMap[parentId].sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  });
 
+  const handleAddComment = (newComment: Comment) => {
+    setCommentsList((prev) => [newComment, ...prev]);
+  };
+
+  const handleAddReply = (newReply: Comment) => {
+    setCommentsList((prev) => [...prev, newReply]);
+  };
 
   const handleUpdateComment = async (id: string, newContent: string) => {
     try {
@@ -44,11 +63,11 @@ const CommentSection = ({ chapterId, comments }: CommentSectionProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, content: newContent }),
       });
-  
+
       if (!res.ok) {
         throw new Error("Failed to update comment");
       }
-  
+
       setCommentsList((prev) =>
         prev.map((comment) =>
           comment.id === id ? { ...comment, content: newContent } : comment
@@ -58,7 +77,7 @@ const CommentSection = ({ chapterId, comments }: CommentSectionProps) => {
       console.error("Failed to update comment", error);
     }
   };
-  
+
   const handleDeleteComment = async (id: string) => {
     try {
       const res = await fetch(`/api/comments`, {
@@ -66,22 +85,17 @@ const CommentSection = ({ chapterId, comments }: CommentSectionProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-  
+
       if (!res.ok) {
         const text = await res.text();
         throw new Error(`Failed to delete comment: ${text}`);
       }
-  
+
       setCommentsList((prev) => prev.filter((comment) => comment.id !== id));
     } catch (error) {
       console.error("Failed to delete comment", error);
     }
   };
-  
-  
-  
-  
-  
 
   const renderComments = (commentsToRender: Comment[]) => {
     return commentsToRender.map((comment) => (
@@ -100,6 +114,7 @@ const CommentSection = ({ chapterId, comments }: CommentSectionProps) => {
           userName={user?.fullName || "Anonymous User"}
           onUpdate={handleUpdateComment}
           onDelete={handleDeleteComment}
+          onReplyAdded={handleAddReply}
           replies={(repliesMap[comment.id] || []).map((reply) => ({
             ...reply,
             userName: user?.fullName || "Anonymous User",
@@ -114,6 +129,14 @@ const CommentSection = ({ chapterId, comments }: CommentSectionProps) => {
       <h3 className="text-lg font-semibold mb-4">Comments</h3>
 
       <div className="border rounded-md p-4">
+        {user && (
+          <CommentForm
+            chapterId={chapterId}
+            userId={user.id}
+            onCommentAdded={handleAddComment}
+          />
+        )}
+
         {commentsList.length === 0 ? (
           <p className="text-sm text-gray-500">No comments yet.</p>
         ) : (

@@ -21,13 +21,19 @@ interface CommentFormProps {
   chapterId: string;
   userId: string;
   parentId?: string;
+  onCommentAdded?: (newComment: any) => void;
 }
 
 const formSchema = z.object({
   comment: z.string().min(1, "Comment cannot be empty"),
 });
 
-const CommentForm = ({ chapterId, userId, parentId }: CommentFormProps) => {
+const CommentForm = ({
+  chapterId,
+  userId,
+  parentId,
+  onCommentAdded,
+}: CommentFormProps) => {
   const router = useRouter();
   const [isFocused, setIsFocused] = useState(false);
 
@@ -40,7 +46,7 @@ const CommentForm = ({ chapterId, userId, parentId }: CommentFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post(`/api/comments`, {
+      const response = await axios.post(`/api/comments`, {
         userId,
         chapterId,
         content: values.comment,
@@ -50,7 +56,10 @@ const CommentForm = ({ chapterId, userId, parentId }: CommentFormProps) => {
       toast.success("Comment added successfully!");
       form.reset();
       setIsFocused(false);
-      router.refresh();
+
+      if (onCommentAdded) {
+        onCommentAdded(response.data);
+      }
     } catch {
       toast.error("Failed to post comment.");
     }
@@ -71,25 +80,23 @@ const CommentForm = ({ chapterId, userId, parentId }: CommentFormProps) => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <>
-                    {!isFocused ? (
-                      // Hiển thị chỉ là 1 dòng giả placeholder như gạch ngang
-                      <div
-                        onClick={() => setIsFocused(true)}
-                        className="cursor-text border-b border-gray-300 text-gray-500 py-2 px-1"
-                      >
-                        Add a comment...
-                      </div>
-                    ) : (
-                      // Khi focus hiện textarea đầy đủ
-                      <textarea
-                        {...field}
-                        placeholder="Write your comment here..."
-                        className="w-full min-h-[80px] border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
-                        autoFocus
-                      />
-                    )}
-                  </>
+                  {!isFocused ? (
+                    // Hiển thị chỉ là 1 dòng giả placeholder như gạch ngang
+                    <div
+                      onClick={() => setIsFocused(true)}
+                      className="cursor-text border-b border-gray-300 text-gray-500 py-2 px-1"
+                    >
+                      Add a comment...
+                    </div>
+                  ) : (
+                    // Khi focus hiện textarea đầy đủ
+                    <textarea
+                      {...field}
+                      placeholder="Write your comment here..."
+                      className="w-full min-h-[80px] border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
+                      autoFocus
+                    />
+                  )}
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -98,17 +105,10 @@ const CommentForm = ({ chapterId, userId, parentId }: CommentFormProps) => {
 
           {isFocused && (
             <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleCancel}
-              >
+              <Button type="button" variant="ghost" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button
-                disabled={!isValid || isSubmitting}
-                type="submit"
-              >
+              <Button disabled={!isValid || isSubmitting} type="submit">
                 Post
               </Button>
             </div>

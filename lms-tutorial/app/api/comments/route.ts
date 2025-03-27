@@ -94,13 +94,11 @@ export async function DELETE(req: Request) {
   }
 }
 
-
-
 export async function PATCH(req: Request) {
   try {
     const authData = await auth();
     const { userId } = authData;
-    const body = await req.json(); // Đọc JSON payload
+    const body = await req.json();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -110,7 +108,7 @@ export async function PATCH(req: Request) {
       return new NextResponse("Invalid JSON payload", { status: 400 });
     }
 
-    const { id, content } = body; // Lấy id và content từ body
+    const { id, content } = body;
 
     if (!id || !content) {
       return new NextResponse("Missing required fields", { status: 400 });
@@ -139,4 +137,3 @@ export async function PATCH(req: Request) {
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
-

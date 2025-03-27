@@ -28,6 +28,7 @@ interface CommentItemProps {
   replies?: CommentType[];
   onUpdate: (id: string, content: string) => void;
   onDelete: (id: string) => void;
+  onReplyAdded?: (newReply: CommentType) => void;
 }
 
 export const CommentItem = ({
@@ -43,6 +44,7 @@ export const CommentItem = ({
   replies,
   onUpdate,
   onDelete,
+  onReplyAdded,
 }: CommentItemProps) => {
   const { user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
@@ -58,8 +60,12 @@ export const CommentItem = ({
     }
     setIsEditing(!isEditing);
   };
-  
 
+  const handleReplyAdded = (newReply: any) => {
+    if (onReplyAdded) {
+      onReplyAdded(newReply);
+    }
+  };
 
   return (
     <div className="flex gap-3 p-4 border-b">
@@ -81,11 +87,10 @@ export const CommentItem = ({
             onChange={(e) => setEditContent(e.target.value)}
           />
         ) : (
-
-        <div
-          className="text-sm text-gray-800"
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+          <div
+            className="text-sm text-gray-800"
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
         )}
 
         <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
@@ -99,14 +104,14 @@ export const CommentItem = ({
             <MessageSquare className="w-4 h-4" />
             Reply
           </button>
-          {user?.id === userId && ( 
+          {user?.id === userId && (
             <>
               <button
                 onClick={handleEdit}
                 className="flex items-center gap-1 hover:underline text-green-500"
               >
                 <Edit className="w-4 h-4" />
-                {isEditing ? "Save" : "Edit"} 
+                {isEditing ? "Save" : "Edit"}
               </button>
               <button
                 onClick={() => onDelete(id)}
@@ -121,31 +126,36 @@ export const CommentItem = ({
 
         {showReplyForm && (
           <div className="mt-4 ml-4">
-            <CommentForm chapterId={chapterId} userId={userId} parentId={id} />
+            <CommentForm
+              chapterId={chapterId}
+              userId={userId}
+              parentId={id}
+              onCommentAdded={handleReplyAdded}
+            />
           </div>
         )}
 
-         {replies && replies.length > 0 && (
-            <div className="mt-4 ml-6 border-l border-gray-200 pl-4 space-y-4">
-              {replies.map((reply) => (
-                <CommentItem
-                  key={reply.id}
-                  id={reply.id}
-                  content={reply.content}
-                  createdAt={reply.createdAt}
-                  isReplying={false}
-                  onReplyClick={() => {}}
-                  showReplyForm={false}
-                  chapterId={reply.chapterId}
-                  userId={reply.userId}
-                  userName={reply.userName}
-                  onUpdate={onUpdate}
-                  onDelete={onDelete}
-                />
-              ))}
-            </div>
-          )}
-
+        {replies && replies.length > 0 && (
+          <div className="mt-4 ml-6 border-l border-gray-200 pl-4 space-y-4">
+            {replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                id={reply.id}
+                content={reply.content}
+                createdAt={reply.createdAt}
+                isReplying={false}
+                onReplyClick={() => {}}
+                showReplyForm={false}
+                chapterId={reply.chapterId}
+                userId={reply.userId}
+                userName={reply.userName}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+                onReplyAdded={onReplyAdded}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
