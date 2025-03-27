@@ -71,7 +71,6 @@ const CommentForm = ({ chapterId, userId, parentId }: CommentFormProps) => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <>
                     {!isFocused ? (
                       // Hiển thị chỉ là 1 dòng giả placeholder như gạch ngang
                       <div
@@ -89,7 +88,6 @@ const CommentForm = ({ chapterId, userId, parentId }: CommentFormProps) => {
                         autoFocus
                       />
                     )}
-                  </>
                 </FormControl>
                 <FormMessage />
               </FormItem>
