@@ -54,6 +54,9 @@ export async function GET(req: Request) {
       orderBy: {
         createdAt: "desc",
       },
+      include: {
+        replies: true,
+      },
     });
 
     return NextResponse.json(comments);
@@ -65,29 +68,72 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const session = await auth();
+    const userId = session.userId;
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { id } = await req.json();
+
+    const comment = await db.comment.findUnique({ where: { id } });
+    if (!comment) {
+      return new NextResponse("Comment not found", { status: 404 });
+    }
+
+    if (comment.userId !== userId) {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
+
+    await db.comment.delete({ where: { id } });
+
+    return new NextResponse("Comment deleted", { status: 200 });
+  } catch (error) {
+    console.error("[COMMENT DELETE ERROR]", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
     const authData = await auth();
     const { userId } = authData;
-    const { commentId } = await req.json();
+    const body = await req.json();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    if (!body || typeof body !== "object") {
+      return new NextResponse("Invalid JSON payload", { status: 400 });
+    }
+
+    const { id, content } = body;
+
+    if (!id || !content) {
+      return new NextResponse("Missing required fields", { status: 400 });
+    }
+
     const comment = await db.comment.findUnique({
-      where: { id: commentId },
+      where: { id },
     });
 
-    if (!comment || comment.userId !== userId) {
+    if (!comment) {
+      return new NextResponse("Comment not found", { status: 404 });
+    }
+
+    if (comment.userId !== userId) {
       return new NextResponse("Forbidden", { status: 403 });
     }
 
-    await db.comment.delete({
-      where: { id: commentId },
+    const updatedComment = await db.comment.update({
+      where: { id },
+      data: { content },
     });
 
-    return new NextResponse("Comment deleted", { status: 200 });
+    return NextResponse.json(updatedComment);
   } catch (error) {
-    console.error("[COMMENT DELETE ERROR]", error);
+    console.error("[COMMENT UPDATE ERROR]", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
