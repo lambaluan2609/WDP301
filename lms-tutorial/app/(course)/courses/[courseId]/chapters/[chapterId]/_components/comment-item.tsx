@@ -5,7 +5,6 @@ import { MessageSquare, Edit, Trash } from "lucide-react";
 import CommentForm from "./comment-form";
 import { useUser } from "@clerk/nextjs";
 
-
 interface CommentType {
   id: string;
   userId: string;
@@ -73,7 +72,7 @@ export const CommentItem = ({
       </div>
 
       <div className="flex-1">
-        <p className="text-sm font-semibold text-gray-900">{user?.fullName}</p>
+        <p className="text-sm font-semibold text-gray-900">{userName}</p>
 
         {isEditing ? ( // 🔹 Nếu đang chỉnh sửa, hiển thị textarea
           <textarea
@@ -125,6 +124,7 @@ export const CommentItem = ({
             <CommentForm chapterId={chapterId} userId={userId} parentId={id} />
           </div>
         )}
+
          {replies && replies.length > 0 && (
             <div className="mt-4 ml-6 border-l border-gray-200 pl-4 space-y-4">
               {replies.map((reply) => (
@@ -145,6 +145,7 @@ export const CommentItem = ({
               ))}
             </div>
           )}
+
       </div>
     </div>
   );

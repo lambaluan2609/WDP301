@@ -5,6 +5,8 @@ import { auth } from "@clerk/nextjs/server";
 import { CheckCircle, Clock } from "lucide-react";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const { userId } = await auth();
 
@@ -31,7 +33,12 @@ export default async function Home() {
           variant="success"
         />
       </div>
-      <CoursesList items={[...coursesInProgress, ...completedCourses]} />
+      <CoursesList
+        items={[...coursesInProgress, ...completedCourses]}
+        isDashboardPage={false}
+        isSearchPage={false}
+        isHomePage={false}
+      />
     </div>
   );
 }

@@ -49,6 +49,7 @@ export const CategoryItem = ({
       )}
       type="button"
     >
+      {/* @ts-ignore */}
       {Icon && <Icon size={20} />}
       <div className="truncate">{label}</div>
     </button>
